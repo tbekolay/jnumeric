@@ -17,7 +17,7 @@ class Abbrev_Test(unittest.TestCase):
     def setUp(self):
         """Hook function, called by all other tests, before running themselves."""
         self.len = 8
-        self.a = arange(1,10)
+        self.a = arange(1, 10)
         self.A = arange(50)
         self.Nrows, self.Ncols = 5, 10
         self.B = reshape(self.A, (self.Nrows, self.Ncols))
@@ -56,7 +56,7 @@ class Abbrev_Test(unittest.TestCase):
         self.assertEqual(alltrue(ones(self.len)), self.true) # All true
         self.assertEqual(alltrue(zeros(self.len)), self.false) # All false
         Z = zeros(self.len)
-        Z[len(Z)/2] = 1 
+        Z[len(Z) / 2] = 1 
         self.assertNotEqual(alltrue(Z), self.true) # Not all true
 
         
@@ -65,7 +65,7 @@ class Abbrev_Test(unittest.TestCase):
         self.assertEqual(sometrue(ones(self.len)), self.true) # All true
         self.assertEqual(sometrue(zeros(self.len)), self.false) # None true
         Z = zeros(self.len)
-        Z[len(Z)/2] = 1 
+        Z[len(Z) / 2] = 1 
         self.assertEqual(sometrue(Z), self.true) # Some true
 
 

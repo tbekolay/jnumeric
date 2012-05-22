@@ -9,8 +9,14 @@
 */
 
 package com.github.jnumeric;
-import org.python.core.*;
-import java.lang.reflect.Array;
+
+import org.python.core.Py;
+import org.python.core.PyComplex;
+import org.python.core.PyInteger;
+import org.python.core.PyObject;
+import org.python.core.PyString;
+import org.python.core.PyTuple;
+
 
 
 

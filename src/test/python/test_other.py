@@ -23,16 +23,16 @@ class Other_Test(unittest.TestCase):
         """Does diagonal() work correctly?"""
         msg = None
         self.len = 4
-        self.assertEqual(diagonal(reshape(arange(100), (10,10))), arange(0,100,11))
+        self.assertEqual(diagonal(reshape(arange(100), (10, 10))), arange(0, 100, 11))
         self.assertEqual(diagonal(identity(self.len), 0), ones(self.len))
         for d in range(1, self.len):
-            self.assertEqual(diagonal(identity(self.len), d), zeros(self.len-d))
-            self.assertEqual(diagonal(identity(self.len), -d), zeros(self.len-d))
+            self.assertEqual(diagonal(identity(self.len), d), zeros(self.len - d))
+            self.assertEqual(diagonal(identity(self.len), -d), zeros(self.len - d))
         for d in range(1, 5):
             if d < 3:
-                self.assertEqual(len(diagonal(reshape(arange(9,-6,-1), (3,5)), d)), 3)
+                self.assertEqual(len(diagonal(reshape(arange(9, -6, -1), (3, 5)), d)), 3)
             else:
-                self.assertEqual(len(diagonal(reshape(arange(9,-6,-1), (3,5)), d)), 3-(d-2))
+                self.assertEqual(len(diagonal(reshape(arange(9, -6, -1), (3, 5)), d)), 3 - (d - 2))
 
 
     def test_fromfunction(self):
@@ -52,8 +52,8 @@ class Other_Test(unittest.TestCase):
         It should return the argument array as a one-dimensional array.
         It should be equivalent to reshape(a, (-1,)) or a.flat."""
         A = arange(100)
-        A = reshape(A, (10,10))
-        self.assertEqual(ravel(A), A.flat )
+        A = reshape(A, (10, 10))
+        self.assertEqual(ravel(A), A.flat)
         self.assertEqual(ravel(A), reshape(A, (-1,)))
         
 
@@ -66,7 +66,7 @@ class Other_Test(unittest.TestCase):
         """Does take() work correctly?"""
         L = 100
         A = arange(L)
-        self.assertEqual(take(A, arange(0,L,2)), arange(0,L,2))
+        self.assertEqual(take(A, arange(0, L, 2)), arange(0, L, 2))
 
     def test_transpose(self):
         """Does transpose() work correctly?"""
@@ -100,7 +100,7 @@ class Other_Test(unittest.TestCase):
         # Works only on 1D arrays, refuses other shapes.
         self.assertEqual(nonzero(self.a), self.a[1:])
         try:
-            nonzero(ones((10,10)))
+            nonzero(ones((10, 10)))
         except ValueError, e:
             pass
         else:

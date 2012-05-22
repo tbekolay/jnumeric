@@ -10,11 +10,11 @@ class Arg_Test(unittest.TestCase):
         """Hook function, called by all other tests,
         before running themselves."""
         self.len = 8
-        self.a = arange(1,10)
+        self.a = arange(1, 10)
 
     def test_Argmax(self):
         """Does argmax() work correctly?"""
-        self.assertEqual(argmax(self.a), len(self.a)-1)
+        self.assertEqual(argmax(self.a), len(self.a) - 1)
     
     def test_Argmin(self):
         """Does argmin() work correctly?"""

@@ -9,14 +9,17 @@
 */
 
 package com.github.jnumeric;
-import org.python.core.*;
+import org.python.core.ClassDictInit;
+import org.python.core.PyObject;
+import org.python.core.PyString;
+
 import java.lang.reflect.Array;
 
 
 
-public class Umath implements InitModule {
+public class Umath implements ClassDictInit {
 
-	public void initModule(PyObject dict) {
+	public static void classDictInit(PyObject dict) {
 		dict.__setitem__("__doc__", new PyString("Universal math functions."));
 
 		// umath functions

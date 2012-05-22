@@ -9,7 +9,7 @@ class Create_Test(unittest.TestCase):
     def setUp(self):
         """Hook function, called by all other tests, before running themselves."""
         self.len = 8
-        self.a = arange(1,10)
+        self.a = arange(1, 10)
 
     def test_identity(self):
         """Does identity() work correctly?"""
@@ -20,7 +20,7 @@ class Create_Test(unittest.TestCase):
 
         for i in range(len(I)): # Check value of each element
             for j in range(len(I)):
-                if i==j: self.assertEqual(I[i][j], 1)
+                if i == j: self.assertEqual(I[i][j], 1)
                 else: self.assertEqual(I[i][j], 0)
 
 

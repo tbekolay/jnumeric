@@ -9,9 +9,8 @@
 */
 
 package com.github.jnumeric;
-import org.python.core.*;
-import java.lang.*;
-import java.util.*;
+import org.python.core.Py;
+import org.python.core.PyObject;
  
 // There are faster ways to do much of this, but I'm writing the simplest possible FFT.
 

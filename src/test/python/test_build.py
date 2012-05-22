@@ -17,18 +17,18 @@ class Build_Test(unittest.TestCase):
     def test_concatenate(self):
         """Does concatenate() work correctly?"""
         b = concatenate((self.a, self.a, self.a))
-        self.assertEqual(len(b), 3*len(self.a))
-        self.assertEqual(concatenate((ones(self.len), ones(self.len), ones(self.len))), ones(3*self.len))
+        self.assertEqual(len(b), 3 * len(self.a))
+        self.assertEqual(concatenate((ones(self.len), ones(self.len), ones(self.len))), ones(3 * self.len))
         
         
     def test_reshape(self):
         """Does reshape() work correctly?"""
         # Number of elements must be same in old and new.
-        b = reshape(self.a, (5,20))
-        self.assertEqual(len(self.a), len(b)*len(b[0]))
+        b = reshape(self.a, (5, 20))
+        self.assertEqual(len(self.a), len(b) * len(b[0]))
         # Should get exception if try to reshape to different number of elements.
         try: 
-            b = reshape(self.a, (5,19))
+            b = reshape(self.a, (5, 19))
         except Exception, e:
 #            print "\nException thrown: ", e
             pass
@@ -40,8 +40,8 @@ class Build_Test(unittest.TestCase):
     def test_resize(self):
         """Does resize() work correctly?"""
         # Number of elements does not have to be same in old and new.
-        b = resize(self.a, (5,10))
-        self.assert_(len(self.a) >= len(b)*len(b[0]))
+        b = resize(self.a, (5, 10))
+        self.assert_(len(self.a) >= len(b) * len(b[0]))
 
         
     def test_repeat(self):

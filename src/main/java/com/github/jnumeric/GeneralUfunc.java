@@ -9,7 +9,7 @@
 */
 
 package com.github.jnumeric;
-import org.python.core.*;
+import org.python.core.PyObject;
 
 // XXX migrate various pieces of PyMultiarray to here.
 public class GeneralUfunc extends PyObject {

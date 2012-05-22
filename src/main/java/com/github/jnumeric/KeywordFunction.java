@@ -9,7 +9,9 @@
 */
 
 package com.github.jnumeric;
-import org.python.core.*;
+import org.python.core.Py;
+import org.python.core.PyObject;
+import org.python.core.PyString;
 
 abstract public class KeywordFunction extends PyObject {
     protected String docString;

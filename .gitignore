@@ -1,2 +1,8 @@
 *.pyc
 *.class
+.classpath
+.externalToolBuilders
+.project
+.pydevproject
+.settings
+target

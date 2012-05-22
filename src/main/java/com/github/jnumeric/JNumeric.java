@@ -9,14 +9,18 @@
 */
 
 package com.github.jnumeric;
-import org.python.core.*;
+import org.python.core.ClassDictInit;
+import org.python.core.Py;
+import org.python.core.PyObject;
+import org.python.core.PyTuple;
+
 import java.lang.reflect.Array;
 
 
 
-public class JNumeric implements InitModule {
+public class JNumeric implements ClassDictInit {
 
-	public void initModule(PyObject dict) {
+	public static void classDictInit(PyObject dict) {
 		
 		// import modules
 		dict.__setitem__("umath", PyJavaClass.lookup(Umath.class));

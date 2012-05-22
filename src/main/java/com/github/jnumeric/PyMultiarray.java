@@ -9,8 +9,23 @@
 */
 
 package com.github.jnumeric;
-import org.python.core.*;
-//import java.lang.reflect.Constructor;
+import org.python.core.Py;
+import org.python.core.PyArray;
+import org.python.core.PyClass;
+import org.python.core.PyComplex;
+import org.python.core.PyEllipsis;
+import org.python.core.PyException;
+import org.python.core.PyFloat;
+import org.python.core.PyInteger;
+import org.python.core.PyList;
+import org.python.core.PyNone;
+import org.python.core.PyObject;
+import org.python.core.PySequence;
+import org.python.core.PySlice;
+import org.python.core.PyString;
+import org.python.core.PyTuple;
+import org.python.core.__builtin__;
+
 import java.lang.reflect.Array;
 import java.lang.Math;
 import java.util.Arrays;
@@ -153,7 +168,7 @@ public class PyMultiarray extends PySequence {
 	return offset + length;
     }
 
-    /** Create a multiarray object from a PyArray (jarray) don't coppy unless forced to. */
+    /** Create a multiarray object from a PyArray (jarray) don't copy unless forced to. */
     private static PyMultiarray arrayToMultiarray(PyArray seq, char typecode) {
 	Object data = seq.__tojava__(Object.class);
 	char type = arrayClassToType(data.getClass());

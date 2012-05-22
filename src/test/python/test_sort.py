@@ -10,7 +10,7 @@ class Sort_Test(unittest.TestCase):
         """Hook function, called by all other tests,
         before running themselves."""
         self.len = 8
-        self.a = arange(1,10)
+        self.a = arange(1, 10)
 
     def test_sort(self):
         """Does sort() work correctly?"""
@@ -26,7 +26,7 @@ class Sort_Test(unittest.TestCase):
         self.assertEqual(len(b), len(sort(b))) # Same length
         for i in range(len(b)):
             self.assert_(b[i] in sort_b) # Same contents
-            if i+1 != len(b): self.assert_(sort_b[i] < sort_b[i+1]) # Correct order
+            if i + 1 != len(b): self.assert_(sort_b[i] < sort_b[i + 1]) # Correct order
         
         
     def test_argsort(self):
@@ -35,7 +35,7 @@ class Sort_Test(unittest.TestCase):
 
     def test_searchsorted(self):
         """Does searchsorted() work correctly?"""
-        middle_index = len(self.a)/2
+        middle_index = len(self.a) / 2
         middle_element = self.a[middle_index]
         self.assertEqual(searchsorted(self.a, middle_element), middle_index)
     

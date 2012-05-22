@@ -24,7 +24,7 @@ class Select_Test(unittest.TestCase):
         self.assert_(choose(greater(self.a, limit), (self.a, limit)) == self.a)
         # All above the limit
         limit = -1000
-        self.assert_(choose(greater(self.a, limit), (self.a, limit))/limit == ones(len(self.a)))
+        self.assert_(choose(greater(self.a, limit), (self.a, limit)) / limit == ones(len(self.a)))
             
 
     def test_clip(self):
@@ -42,16 +42,16 @@ class Select_Test(unittest.TestCase):
         """Does compress() work?"""
 #        print "\n\ntest_select: COMPRESS"
         L = len(self.a)
-        self.assertEqual(compress(greater(self.a, 5.0*ones(L)), self.a, 0), arange(6,self.len))
+        self.assertEqual(compress(greater(self.a, 5.0 * ones(L)), self.a, 0), arange(6, self.len))
 
     
     def test_where(self):
         """Does where() work correctly?"""
 #        print "\n\ntest_select: WHERE"
-        A = arange(9,-1,-1)
+        A = arange(9, -1, -1)
 #        print "A = ", A
         try:
-            self.assertEqual(where(equal(A,A), A, 0), A)
+            self.assertEqual(where(equal(A, A), A, 0), A)
             self.assertEqual(where(A == A, A, 0), A)
             self.assertEqual(where(A > A, A, 0), zeros(len(A)))
         except Exception, e:
