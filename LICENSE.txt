@@ -1,0 +1,58 @@
+JNumeric is released under the Python license.
+
+See www.python.org.
+
+Python License (also known as CNRI's license)
+
+CNRI OPEN SOURCE LICENSE AGREEMENT
+
+IMPORTANT: PLEASE READ THE FOLLOWING AGREEMENT CAREFULLY.
+
+
+1. This LICENSE AGREEMENT is between the copyright holders of
+the JNumerical Project (Tim Hochberg, Daniel Lemire, 
+and Frank Gibbons), and the Individual or Organization ("Licensee") accessing and
+otherwise using JNumeric software in source or binary form and its
+associated documentation, as released at the jnumerical.sourceforge.net Internet site.
+
+2. Subject to the terms and conditions of this License Agreement, 
+the copyright holders hereby grants Licensee a non-exclusive, royalty-free, 
+world-wide license to reproduce, analyze, test, perform and/or display publicly, 
+prepare derivative works, distribute, and otherwise use JNumeric alone or in any derivative
+version, provided, however, that CNRI's License Agreement is retained in
+JNumeric, alone or in any derivative version prepared by Licensee.
+
+
+3. In the event Licensee prepares a derivative work that is based on or
+incorporates JNumeric or any part thereof, and wants to make the derivative
+work available to the public as provided herein, then Licensee hereby agrees
+to indicate in any such work the nature of the modifications made to JNumeric.
+
+4. The copyright holders are making JNumeric available to Licensee on an "AS IS" basis. 
+The copyright holders MAKE NO REPRESENTATIONS OR WARRANTIES, EXPRESS OR IMPLIED. BY WAY OF EXAMPLE,
+BUT NOT LIMITATION, CNRI MAKES NO AND DISCLAIMS ANY REPRESENTATION OR WARRANTY
+OF MERCHANTABILITY OR FITNESS FOR ANY PARTICULAR PURPOSE OR THAT THE USE OF
+JNumeric WILL NOT INFRINGE ANY THIRD PARTY RIGHTS.
+
+5. The copyright holders SHALL NOT BE LIABLE TO LICENSEE OR ANY OTHER USERS OF THE SOFTWARE FOR
+ANY INCIDENTAL, SPECIAL, OR CONSEQUENTIAL DAMAGES OR LOSS AS A RESULT OF
+USING, MODIFYING OR DISTRIBUTING JNumeric, OR ANY DERIVATIVE THEREOF, EVEN
+IF ADVISED OF THE POSSIBILITY THEREOF.
+
+6. This License Agreement will automatically terminate upon a material breach
+of its terms and conditions.
+
+7. This License Agreement shall be governed by and interpreted in all respects
+by the law of the State of Virginia, excluding conflict of law provisions.
+Nothing in this License Agreement shall be deemed to create any relationship
+of agency, partnership, or joint venture between the copyright holders
+and Licensee. This License Agreement does not grant permission to use 
+the copyright holders trademarks or trade name in a trademark sense to endorse
+or promote products or services of Licensee, or any third party.
+
+8. By clicking on the "ACCEPT" button where indicated, or by copying,
+installing or otherwise using JNumeric, Licensee agrees to be bound by the
+terms and conditions of this License Agreement.
+
+
+

@@ -1,0 +1,27 @@
+(Intentional) Differences between JNumeric and CNumeric
+
+* There is no multiarray module.
+* umath is a submodule of the Numeric package.
+* Ones acts like zeros if no typecode is given instead of defaulting to Int.
+* Int refers to native (Int32) int type rather than largest (Int64) type.
+* a[0] doesn't work for zeros sized arrays -- use a[()] or a[...].
+* Some of the unfuncs that should have been returning ints, returned 
+types that matched their arguments (logical_and for example). Also,
+some of the documented ufuncs are missing from CNumeric.
+* Changed the behaviour of dot. Now dot acts on axis -1/0 by default,
+since it now accepts two axes arguments, this is not as big a deal as it once
+was.
+* Diagonal now takes only one axis argument (diagonal is taken on axis, axis+1).
+  I couldn't figure out a way to make sense of using two nonadjacent axes, and the
+  python code was broken for axes != (-2,-1) anyway.
+* Astype does not make a copy if the type matches the current type. (This matches
+  the behaviour of asarray).
+
+(Known differences that should be fixed):
+
+* There are several functions missing that should be added:
+  cross_correlate
+  sarray
+  dump, dumps, load, loads (pickle functions)
+  divide_safe, negative, invert, left_shift, right_shift, fmod, hypot, around, sign
+  
