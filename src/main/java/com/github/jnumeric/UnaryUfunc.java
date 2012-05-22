@@ -9,7 +9,7 @@
 */
 
 
-package JNumeric;
+package com.github.jnumeric;
 import org.python.core.*;
 import java.lang.reflect.Array;
 

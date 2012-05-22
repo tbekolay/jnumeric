@@ -8,7 +8,7 @@
 *
 */
 
-package JNumeric;
+package com.github.jnumeric;
 import org.python.core.*;
 
 // XXX migrate various pieces of PyMultiarray to here.

@@ -8,7 +8,7 @@
 *
 */
 
-package JNumeric;
+package com.github.jnumeric;
 import org.python.core.*;
 
 abstract public class KeywordFunction extends PyObject {
