@@ -12,12 +12,16 @@ package com.github.jnumeric;
 import org.python.core.ClassDictInit;
 import org.python.core.PyObject;
 import org.python.core.PyString;
+import org.python.core.PyType;
 
 import java.lang.reflect.Array;
 
 
-
-public class Umath implements ClassDictInit {
+public class Umath extends PyObject implements ClassDictInit {
+  public Umath() {
+    super(PyType.fromClass(Umath.class)) ;
+    this.javaProxy = this ;
+  }
 
 	public static void classDictInit(PyObject dict) {
 		dict.__setitem__("__doc__", new PyString("Universal math functions."));

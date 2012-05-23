@@ -1,6 +1,5 @@
 
-from Numeric import *
-from FFT import *
+from com.github.jnumeric.JNumeric import *
 import unittest
 
 # Fast Fourier Transform module.

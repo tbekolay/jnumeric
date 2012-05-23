@@ -1,5 +1,5 @@
 
-from Numeric import *
+from com.github.jnumeric.JNumeric import *
 import unittest
 import java.lang.Math
 #from whrandom import *

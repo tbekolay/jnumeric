@@ -16,6 +16,7 @@ import org.python.core.PyComplex;
 import org.python.core.PyEllipsis;
 import org.python.core.PyException;
 import org.python.core.PyFloat;
+import org.python.core.PyIgnoreMethodTag;
 import org.python.core.PyInteger;
 import org.python.core.PyList;
 import org.python.core.PyNone;
@@ -24,6 +25,7 @@ import org.python.core.PySequence;
 import org.python.core.PySlice;
 import org.python.core.PyString;
 import org.python.core.PyTuple;
+import org.python.core.PyType;
 import org.python.core.__builtin__;
 
 import java.lang.reflect.Array;
@@ -53,9 +55,10 @@ public class PyMultiarray extends PySequence {
     public static int maxLineWidth = 77;
     public static int precision = 8;
     public static boolean suppressSmall = false;
-    /** Python class of PyMultiarray. 
+    public static final PyType ATYPE = PyType.fromClass(PyMultiarray.class) ;
+    /** Python class of PyMultiarray.
 	@see PyObject */
-    public static PyClass __class__;
+    //public static PyClass __class__;
     /** The docstring. */
     String docString = "PyMultiarray methods:\n" +
 	"	astype(typecode)]\n" +
@@ -85,7 +88,8 @@ public class PyMultiarray extends PySequence {
     // Constructors.
     /** Create a multiarray object given values of instance variables. */
     public PyMultiarray(Object data, char _typecode, int start, int [] dimensions, int [] strides) {
-	super(__class__);
+	super(ATYPE);
+    this.javaProxy = this ;
 	this.data = data;
 	this._typecode = _typecode;
 	this.start = start;
@@ -97,6 +101,8 @@ public class PyMultiarray extends PySequence {
 
     /** Create a multiarray object from a sequence and a type. */
     public PyMultiarray(PyObject seq, char typecode) {
+    super(ATYPE);
+    this.javaProxy = this ;
 	PyMultiarray a = array(seq, typecode);
 	data = a.data; _typecode = a._typecode; start = a.start; 
 	dimensions = a.dimensions; strides = a.strides; isContiguous = a.isContiguous;
@@ -104,6 +110,8 @@ public class PyMultiarray extends PySequence {
 	
     /** Create a multiarray object from a sequence. */
     public PyMultiarray(PyObject seq) {
+    super(ATYPE);
+    this.javaProxy = this ;
 	PyMultiarray a = array(seq, '\0');
 	data = a.data; _typecode = a._typecode; start = a.start; 
 	dimensions = a.dimensions; strides = a.strides; isContiguous = a.isContiguous;
@@ -296,7 +304,7 @@ public class PyMultiarray extends PySequence {
     }
 
     /** Create a 1D array from a string. 
-	@see tostring*/
+	see toString*/
     public static PyMultiarray fromString(String s, char type) {
 	int itemsize = typeToNBytes(type)*typeToNElements(type);
 	if (s.length() % itemsize != 0)
@@ -1008,7 +1016,7 @@ public class PyMultiarray extends PySequence {
 	if (debug_this)	System.out.println("Length = " + length + " --> PADL = " + padl);
 
 	PyMultiarray a_pad = XC_pad_vector(a, padl);
-	PyMultiarray fft_a = (PyMultiarray) JN_FFT.fft(a_pad);
+	PyMultiarray fft_a = (PyMultiarray) FFT.fft(a_pad);
 
 	PyMultiarray b_pad = XC_pad_vector(b, padl);
 
@@ -1019,8 +1027,8 @@ public class PyMultiarray extends PySequence {
 	 * round, not just truncate.  
 	 * Finally, copy results into standard order ('unpad' them).  */
 	PyMultiarray prod = zeros(new int [] {padl}, 'D');
-	fft_a.__mul__(Umath.conjugate.__call__(JN_FFT.fft(b_pad)), prod);
-	PyMultiarray inverse_prod_real = JN_FFT.inverse_fft(prod).getReal();
+	fft_a.__mul__(Umath.conjugate.__call__(FFT.fft(b_pad)), prod);
+	PyMultiarray inverse_prod_real = FFT.inverse_fft(prod).getReal();
 
 	PyMultiarray result;
 	if ( typeToKind(type) == INTEGER ) { 
@@ -1143,23 +1151,30 @@ public class PyMultiarray extends PySequence {
 
     /** Convert a sequence to an array of ints. */
     static int [] objectToInts(Object jo, boolean forgiving) {
-	try {return (int [])jo;} // Is there a better way of doing this?
-	catch (Throwable t) {}
+	if (jo instanceof int[]) return (int[]) jo;
+
 	if (!(jo instanceof PyObject))
-	throw Py.ValueError("cannot convert argument to array of ints");
+	    throw Py.ValueError("cannot convert argument to array of ints");
 	PyObject o = (PyObject)jo;
 	if (shapeOf(o).length == 0)
-	if (forgiving)
-	return new int [] {asarray(o).__getitem__(Py.Ellipsis).__int__().getValue()};
-	else
-	throw Py.ValueError("cannot convert argument to array of ints");
-	int length = o.__len__();
+	    if (forgiving)
+		//return new int [] {asarray(o).__getitem__(Py.Ellipsis).__int__().getValue()};
+		o = asarray(o).__getitem__(Py.Ellipsis) ;
+	    else
+		throw Py.ValueError("cannot convert argument to array of ints");
+	int length ;
+	try {
+	    length = o.__len__();
+	}
+	catch (Throwable t) {
+	    return new int[] {Py.py2int(o)} ;
+	}
 	int [] intArray = new int[length];
 	for (int i = 0; i < intArray.length; i++) {
 	    PyObject item = o.__getitem__(i);
 	    if (!forgiving && !(item instanceof PyInteger))
 		throw Py.ValueError("cannot convert argument to array of ints");
-	    intArray[i] = o.__getitem__(i).__int__().getValue();
+	    intArray[i] = Py.py2int(o.__getitem__(i));
 	}
 	return intArray;
     }
@@ -1482,6 +1497,7 @@ public class PyMultiarray extends PySequence {
     /** Disable comparison of Multiarrays/ */ 
     public int __cmp__(PyObject other) {
 	boolean debug_this = false;
+	if (! (other instanceof PyMultiarray)) return -2 ;
 	PyMultiarray o = (PyMultiarray) other;
 	if (debug_this) {
 	    System.out.println("__cmp__() passed '" + other.getClass().getName()
@@ -1553,14 +1569,15 @@ public class PyMultiarray extends PySequence {
     }
 
     /** Multiarray attributes are found using <code>__findattr__</code>.*/
-    public PyObject __findattr__(String name) {
-	if (name == "__class__") return __class__;
+    public PyObject __findattr_ex__(String name) {
+	//if (name == "__class__") return __class__;
 	if (name == "__doc__") return Py.newString(docString);
-	if (name == "shape") return __builtin__.tuple(new PyArray(int.class, dimensions)); 
+	if (name == "shape") return PyTuple.fromIterable(new PyArray(int.class, dimensions)) ; // return __builtin__.tuple(new PyArray(int.class, dimensions)); 
 	if (name == "real") return getReal();
 	if (name == "imag" || name == "imaginary") return getImag();
 	if (name == "flat" && isContiguous) return reshape(this, new int [] {-1});
-	return super.__findattr__(name);
+	if (name == "T" && dimensions.length==2) return transpose(this,new int [] {1,0});
+	return super.__findattr_ex__(name) ;
     }
 
     /** Multiarray attributes are set using <code>__setattr__</code>.*/
@@ -1606,6 +1623,10 @@ public class PyMultiarray extends PySequence {
 	return returnValue(new PyMultiarray(data, _typecode, newStart, newDimensions, newStrides));
     }
 
+    protected PyObject pyget(int i) {
+	return get(i) ;
+    }
+
     protected PyObject repeat(int count) {
 	throw Py.TypeError("can't apply '*' to arrays");
     }
@@ -1648,7 +1669,16 @@ public class PyMultiarray extends PySequence {
             throw Py.TypeError("slice index must be int");
         return ((PyInteger)index).getValue();
     }
-	
+
+    /** from jython 2.2.1 PySequence */
+    protected static final int getStep1(PyObject s_step) {
+      int step = getIndex(s_step, 1);
+      if (step == 0) {
+          throw Py.TypeError("slice step of zero not allowed");
+      }
+      return step;
+    }
+
     /* Should go in PySequence */
     protected static final int getStart1(PyObject s_start, int step, int length)
     {
@@ -1689,7 +1719,8 @@ public class PyMultiarray extends PySequence {
     /** Convert a set of indices into a Multiarray object, but do not fill in the data.*/
     private final PyMultiarray indicesToStructure(PyObject pyIndices) {
 	// Convert the pyIndices into an array of PyObjects.
-	PyObject indices[] = (pyIndices instanceof PyTuple) ? ((PyTuple)pyIndices).list : new PyObject[] {pyIndices};
+	// RGA PyObject indices[] = (pyIndices instanceof PyTuple) ? ((PyTuple)pyIndices).list : new PyObject[] {pyIndices};
+	PyObject indices[] = (pyIndices instanceof PyTuple) ? ((PyTuple)pyIndices).getArray() : new PyObject[] {pyIndices};
 	// First pass: determine the size of the new dimensions.
 	int nDimensions = dimensions.length, ellipsisLength = 0, axis = 0;
 	for (int i = 0; i < indices.length; i++) {
@@ -1738,7 +1769,7 @@ public class PyMultiarray extends PySequence {
 	    }
 	    else if (index instanceof PySlice) {
 		PySlice slice = (PySlice)index;
-		int sliceStep = getStep(slice.step);
+		int sliceStep = getStep1(slice.step);
 		int sliceStart = getStart1(slice.start, sliceStep, dimensions[oldAxis]);
 		int sliceStop = getStop1(slice.stop, sliceStart, sliceStep, dimensions[oldAxis]);
 		if (sliceStep > 0)
@@ -3354,13 +3385,21 @@ public class PyMultiarray extends PySequence {
 		maxDouble(sa, a, sb, b, sr, r, d+1);
     }
 
+    public static PyObject myMax(PyObject a, PyObject b) {
+      return b._gt(a).__nonzero__() ? b : a ;
+    }
+
+    public static PyObject myMin(PyObject a, PyObject b) {
+      return b._lt(a).__nonzero__() ? b : a ;
+    }
+
     private final static void maxObject(int sa, PyMultiarray a, int sb, PyMultiarray b, int sr, PyMultiarray r, int d) {
 	final int dsa = a.strides[d], dsb = b.strides[d], dsr = r.strides[d], maxSr =  sr + r.dimensions[d]*r.strides[d];
 	if (d == r.dimensions.length - 1) {
 	    final PyObject[] aData = (PyObject[])a.data, bData = (PyObject[])b.data;
 	    final PyObject[] rData = (PyObject[])r.data;
 	    for (; sr != maxSr; sa+=dsa, sb+=dsb, sr+=dsr)
-		rData[sr] = (PyObject)(__builtin__.max(new PyObject [] {aData[sa], bData[sb]}));
+		rData[sr] = myMax(aData[sa], bData[sb]) ; //(PyObject)(__builtin__.max(new PyObject [] {aData[sa], bData[sb]}));
 	}
 	else	
 	    for (; sr != maxSr; sa+=dsa, sb+=dsb, sr+=dsr)
@@ -3477,7 +3516,7 @@ public class PyMultiarray extends PySequence {
 	    final PyObject[] aData = (PyObject[])a.data, bData = (PyObject[])b.data;
 	    final PyObject[] rData = (PyObject[])r.data;
 	    for (; sr != maxSr; sa+=dsa, sb+=dsb, sr+=dsr)
-		rData[sr] = (PyObject)(__builtin__.min(new PyObject [] {aData[sa], bData[sb]}));
+		rData[sr] = myMin(aData[sa], bData[sb]) ; //(PyObject)(__builtin__.min(new PyObject [] {aData[sa], bData[sb]}));
 	}
 	else	
 	    for (; sr != maxSr; sa+=dsa, sb+=dsb, sr+=dsr)
@@ -4836,7 +4875,9 @@ public class PyMultiarray extends PySequence {
 	return returnValue(result);
     }
 
-    public PyObject __abs__() {
+  public boolean isNumberType() throws PyIgnoreMethodTag { return true; }  // so abs() will work
+
+  public PyObject __abs__() {
 	return returnValue(__abs__(array(this)));
     }
 

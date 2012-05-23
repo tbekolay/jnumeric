@@ -1,5 +1,5 @@
 
-from Numeric import *
+from com.github.jnumeric.JNumeric import *
 import unittest
 
 # The tests in this case are for functions which are really just

@@ -1,5 +1,5 @@
 
-from Numeric import *
+from com.github.jnumeric.JNumeric import *
 import unittest
 
 class Sort_Test(unittest.TestCase):

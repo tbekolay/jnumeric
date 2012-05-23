@@ -10,9 +10,15 @@
 
 package com.github.jnumeric;
 import org.python.core.PyObject;
+import org.python.core.PyType;
 
 // XXX migrate various pieces of PyMultiarray to here.
 public class GeneralUfunc extends PyObject {
+	private static final long serialVersionUID = 2988200647889866329L;
 
+	public GeneralUfunc() {
+		super(PyType.fromClass(GeneralUfunc.class)) ;
+		this.javaProxy = this ;
+	}
 }
 

@@ -1,7 +1,7 @@
 
 # This file is intended to test functions used to build arrays from existing arrays.
 
-from Numeric import *
+from com.github.jnumeric.JNumeric import *
 import unittest
 
 class Build_Test(unittest.TestCase):

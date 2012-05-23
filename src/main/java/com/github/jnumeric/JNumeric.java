@@ -13,24 +13,30 @@ import org.python.core.ClassDictInit;
 import org.python.core.Py;
 import org.python.core.PyObject;
 import org.python.core.PyTuple;
+import org.python.core.PyType;
 
 import java.lang.reflect.Array;
 
 
 
-public class JNumeric implements ClassDictInit {
+public class JNumeric extends PyObject implements ClassDictInit {
+	public JNumeric() {
+		super(PyType.fromClass(JNumeric.class)) ;
+		this.javaProxy = this ;
+	}
 
 	public static void classDictInit(PyObject dict) {
 		
 		// import modules
-		dict.__setitem__("umath", PyJavaClass.lookup(Umath.class));
-		dict.__setitem__("FFT", PyJavaClass.lookup(JN_FFT.class));
+		Umath umath = new Umath();
+		dict.__setitem__("umath", umath);
+		dict.__setitem__("FFT", new FFT());
 
 		dict.__setitem__("__doc__", Py.newString(__doc__));
 		dict.__setitem__("__version__", Py.newString("0.2a6"));
 
 		// from umath import * (more or less).
-		new Umath().initModule(dict);
+		Umath.classDictInit(dict);
 
 		// constants
 
@@ -52,7 +58,7 @@ public class JNumeric implements ClassDictInit {
 		dict.__setitem__("Complex128", Py.newString("D"));
 		dict.__setitem__("Complex", Py.newString("D"));
 
-		dict.__setitem__("ArrayType", PyMultiarray.__class__);
+		dict.__setitem__("ArrayType", PyMultiarray.ATYPE);
 		dict.__setitem__("NewAxis", Py.None);
 		if (Py.py2int(PyMultiarray.fromString("\001\000\000\000\000\000\000\000", 'i').get(0)) == 1)
 			dict.__setitem__("LittleEndian", Py.One);
@@ -105,7 +111,7 @@ public class JNumeric implements ClassDictInit {
 		dict.__setitem__("cumproduct", cumproduct);
 		dict.__setitem__("alltrue", alltrue);
 		dict.__setitem__("sometrue", sometrue);
-}
+    }
 
 	// Numeric functions
 
@@ -532,7 +538,7 @@ class WhereFunction extends KeywordFunction {
 	}
 	public PyObject _call(PyObject args[]) {
 		return PyMultiarray.choose(Umath.not_equal.__call__(args[0], Py.Zero),
-			new PyTuple(new PyObject [] {args[2], args[1]}));
+			new PyTuple(args[2], args[1]));
 	}
 }
 class ZerosFunction extends KeywordFunction {

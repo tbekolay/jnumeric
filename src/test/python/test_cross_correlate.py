@@ -1,5 +1,5 @@
 
-from Numeric import *
+from com.github.jnumeric.JNumeric import *
 from FFT import *
 import unittest
 

@@ -11,11 +11,18 @@
 package com.github.jnumeric;
 import org.python.core.Py;
 import org.python.core.PyObject;
+import org.python.core.PyType;
  
 // There are faster ways to do much of this, but I'm writing the simplest possible FFT.
 
-public class JN_FFT extends PyObject {
+public class FFT extends PyObject {
+	private static final long serialVersionUID = 5458819189675402442L;
 
+	public FFT() {
+		super(PyType.fromClass(FFT.class)) ;
+		this.javaProxy = this ;
+	}
+	
 	static PyMultiarray _fft(PyObject o, boolean inverse) {
 		PyMultiarray a = PyMultiarray.asarray(o, 'D');
 		if (PyMultiarray.shapeOf(a).length != 1)

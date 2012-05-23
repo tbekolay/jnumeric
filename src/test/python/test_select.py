@@ -1,5 +1,5 @@
 
-from Numeric import *
+from com.github.jnumeric.JNumeric import *
 import unittest
 
 # This suite tests functions that didn't fit into any of the other categories.

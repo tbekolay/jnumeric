@@ -12,13 +12,21 @@ package com.github.jnumeric;
 import org.python.core.Py;
 import org.python.core.PyObject;
 import org.python.core.PyString;
+import org.python.core.PyType;
 
-abstract public class KeywordFunction extends PyObject {
-    protected String docString;
+public class KeywordFunction extends PyObject {
+    public KeywordFunction() {
+      super(PyType.fromClass(KeywordFunction.class)) ;
+      this.javaProxy = this ;
+    }
+
+    protected String docString = "abstract KeywordFunction";
     protected String [] argNames;
     protected PyObject [] defaultArgs;
 
-    abstract PyObject _call(PyObject args[]);
+    protected PyObject _call(PyObject args[]) {
+      return Py.None ;
+    }
 
     public PyObject __call__(PyObject args[], String keywords[]) {
 	return _call(processArgs(args, keywords));
@@ -58,8 +66,8 @@ abstract public class KeywordFunction extends PyObject {
 	return allArgs;
     }
 
-    public PyObject __findattr__(String name) {
-	if (name == "__doc__") return new PyString(docString);
-	return super.__findattr__(name);
+    public PyObject __findattr_ex__(String name) {
+      if (name == "__doc__") return new PyString(docString);
+      return super.__findattr_ex__(name) ;
     }
 }

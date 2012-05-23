@@ -20,7 +20,9 @@ import java.lang.reflect.Array;
 
 public class BinaryUfunc extends KeywordFunction {
 
-    static final public BinaryFunction add = new Add();
+	private static final long serialVersionUID = 2592949830660376736L;
+	
+	static final public BinaryFunction add = new Add();
     static final public BinaryFunction subtract = new Subtract();
     static final public BinaryFunction multiply = new Multiply();
     static final public BinaryFunction divide = new Divide();
@@ -76,9 +78,9 @@ public class BinaryUfunc extends KeywordFunction {
 	defaultArgs = new PyObject [] {null, null, Py.None};
     }
 
-    public PyObject __findattr__(String name) {
+    public PyObject __findattr_ex__(String name) {
 	if (name == "__doc__") return new PyString(function.docString() + docString());
-	return super.__findattr__(name);
+	return super.__findattr_ex__(name);
     }
 	
     public PyObject outer(PyObject poa, PyObject pob) {
@@ -139,7 +141,7 @@ public class BinaryUfunc extends KeywordFunction {
 	int [] shape = new int[a.dimensions.length-1];
 	for (int i = 0; i < a.dimensions.length-1; i++)
 	    shape[i] = a.dimensions[i+1];
-	PyMultiarray b = PyMultiarray.zeros(shape, function.returnsInt ? 'i' : a._typecode);
+	PyMultiarray b = PyMultiarray.zeros(shape, BinaryFunction.returnsInt ? 'i' : a._typecode);
 	// Loop over other axes and reduce...
 	a = PyMultiarray.reshape(a, new int [] {a.dimensions[0], -1});
 	b = PyMultiarray.reshape(b, new int [] {1, -1});
@@ -164,7 +166,7 @@ public class BinaryUfunc extends KeywordFunction {
 	if (a.dimensions[0] == 0) return PyMultiarray.asarray(function.identity(), a._typecode);
 	// Get the array b;
 	int [] shape = (int[])a.dimensions.clone();
-	PyMultiarray b = PyMultiarray.zeros(shape, function.returnsInt ? 'i' : a._typecode);
+	PyMultiarray b = PyMultiarray.zeros(shape, BinaryFunction.returnsInt ? 'i' : a._typecode);
 	// Loop over other axes and reduce...
 	a = PyMultiarray.reshape(a, new int [] {a.dimensions[0], -1});
 	b = PyMultiarray.reshape(b, new int [] {1, -1});
