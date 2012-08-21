@@ -1,5 +1,5 @@
-
 from com.github.jnumeric.JNumeric import *
+import junit
 import unittest
 
 # The tests in this case are for functions which are really just
@@ -7,12 +7,11 @@ import unittest
 # functions. Thus, alltrue is an abbreviation for 'reduce applied to
 # logical and'.
 
-class Abbrev_Test(unittest.TestCase):
+class Abbrev_Test(JNumericTestCase):
     len = 8
     a = None
     false = 0
     true = 1
-
     
     def setUp(self):
         """Hook function, called by all other tests, before running themselves."""
@@ -23,6 +22,11 @@ class Abbrev_Test(unittest.TestCase):
         self.B = reshape(self.A, (self.Nrows, self.Ncols))
         self.mysum = zeros(self.Ncols)
 
+    def tearDown(self):
+        """
+        called after each test.
+        """
+        pass
 
     def test_sum(self):
         """Does sum() work correctly?"""
