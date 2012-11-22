@@ -15,10 +15,6 @@ import org.python.core.PyObject;
 import org.python.core.PyTuple;
 import org.python.core.PyType;
 
-import java.lang.reflect.Array;
-
-
-
 public class JNumeric extends PyObject implements ClassDictInit {
 	public JNumeric() {
 		super(PyType.fromClass(JNumeric.class)) ;

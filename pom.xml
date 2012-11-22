@@ -6,16 +6,45 @@
   <name>JNumeric</name>
   <description>NumPy-like syntax for Jython</description>
   <dependencies>
-  <dependency>
-  	<groupId>org.python</groupId>
-  	<artifactId>jython-standalone</artifactId>
-  	<version>2.5.2</version>
-  </dependency>
-  <dependency>
-  	<groupId>junit</groupId>
-  	<artifactId>junit</artifactId>
-  	<version>4.8.1</version>
-  	<scope>test</scope>
-  </dependency>
+	<dependency>
+  	  <groupId>org.python</groupId>
+  	  <artifactId>jython-standalone</artifactId>
+  	  <version>2.5.2</version>
+    </dependency>
   </dependencies>
+  <build>
+    <testResources>
+      <testResource>
+        <directory>src/test/jython</directory>
+      </testResource>
+    </testResources>
+    <plugins>
+      <plugin>
+        <groupId>net.sf.mavenjython.test</groupId>
+        <artifactId>python-test-maven-plugin-external</artifactId>
+        <version>1.0</version>
+        <executions>
+          <execution>
+            <phase>test</phase>
+            <goals>
+              <goal>python</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <program>./run_all_tests.py</program>
+        </configuration>
+      </plugin>
+      <!--
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.6</source>
+          <target>1.6</target>
+        </configuration>
+      </plugin>
+      -->
+    </plugins>
+  </build>
 </project>
