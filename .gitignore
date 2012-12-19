@@ -1,6 +1,7 @@
 *.pyc
 *.class
 .classpath
+.DS_STORE
 .externalToolBuilders
 .project
 .pydevproject

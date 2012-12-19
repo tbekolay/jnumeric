@@ -22,7 +22,7 @@ class Math_Test(unittest.TestCase):
         """Do the functions work?"""
         self.assertEqual(log(1.0), 0.0)
         self.assertEqual(log(0.0), java.lang.Float.NEGATIVE_INFINITY)
-        self.assertEqual(log(-1.0), java.lang.Float.NEGATIVE_INFINITY) # is this correct behavior?
+        self.assertTrue(java.lang.Float.isNaN(log(-1.0))) 
         self.assertEqual(log(java.lang.Float.POSITIVE_INFINITY), java.lang.Float.POSITIVE_INFINITY)
 
 #    def testInverses(self):
