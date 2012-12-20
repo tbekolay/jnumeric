@@ -53,7 +53,10 @@ if all_files == None:
     print "No Python files found in ", search_dir, ". Exiting."
     sys.exit(0)
 
-jython = find_file("jython", os.environ['PATH'])
+jython = find_file("jython", os.environ['PATH']) or os.environ['JYTHONPATH']
+if not jython:
+	print "Cannot find jython"
+	sys.exit(0)
 if verbose: print "Full path to Jython", jython
 
 for file in all_files:
