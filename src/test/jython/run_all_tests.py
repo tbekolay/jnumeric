@@ -53,15 +53,12 @@ if all_files == None:
     print "No Python files found in ", search_dir, ". Exiting."
     sys.exit(0)
 
-jython = find_file("jython", os.environ['PATH']) or os.environ['JYTHONPATH']
-if not jython:
-	print "Cannot find jython"
-	sys.exit(0)
-if verbose: print "Full path to Jython", jython
-
 for file in all_files:
-    if file == this_script: continue
-    if file.endswith('.py'):
-        full_path = os.path.join(search_dir, file)
-        if verbose: print "Running '" + jython, full_path + "'" 
-        os.system("%s -Dpython.path=%s %s" % (jython, "../classes", full_path))
+    if file == this_script or not file.endswith('.py'): continue
+    module = os.path.splitext(file)[0]
+    if verbose: print "Running " + module
+    try:
+        exec "import " + module
+    except Exception, e:
+        print "Exception while running " + module + ":"
+        print e
