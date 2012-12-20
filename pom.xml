@@ -46,12 +46,12 @@
 					</execution>
 				</executions>
 				<configuration>
-					<executable>python</executable>
+					<executable>java</executable>
 					<workingDirectory>${basedir}/target/test-classes</workingDirectory>
-					<environmentVariables>
-						<JYTHONPATH>${org.python:jython-standalone:jar}</JYTHONPATH>
-					</environmentVariables>
 					<arguments>
+						<argument>-Dpython.path=${project.build.outputDirectory}</argument>
+						<argument>-jar</argument>
+						<argument>${org.python:jython-standalone:jar}</argument>
 						<argument>run_all_tests.py</argument>
 						<argument>-v</argument>
 					</arguments>
