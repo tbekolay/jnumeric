@@ -1,62 +1,181 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.github.jnumeric</groupId>
-	<artifactId>jnumeric</artifactId>
-	<version>0.1</version>
-	<name>JNumeric</name>
-	<description>NumPy-like syntax for Jython</description>
-	<dependencies>
-		<dependency>
-			<groupId>org.python</groupId>
-			<artifactId>jython-standalone</artifactId>
-			<version>2.5.2</version>
-		</dependency>
-	</dependencies>
-	<build>
-		<testResources>
-			<testResource>
-				<directory>src/test/jython</directory>
-			</testResource>
-		</testResources>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<version>2.6</version>
-				<executions>
-					<execution>
-						<id>loadDeps</id>
-						<phase>compile</phase>
-						<goals>
-							<goal>properties</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
-				<version>1.2.1</version>
-				<executions>
-					<execution>
-						<phase>test</phase>
-						<goals>
-							<goal>exec</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<executable>java</executable>
-					<workingDirectory>${basedir}/target/test-classes</workingDirectory>
-					<arguments>
-						<argument>-Dpython.path=${project.build.outputDirectory}</argument>
-						<argument>-jar</argument>
-						<argument>${org.python:jython-standalone:jar}</argument>
-						<argument>run_all_tests.py</argument>
-						<argument>-v</argument>
-					</arguments>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.github.jnumeric</groupId>
+  <artifactId>jnumeric</artifactId>
+  <version>0.1-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>JNumeric</name>
+  <description>NumPy-like syntax for Jython</description>
+  <url>http://tbekolay.github.com/jnumeric/</url>
+
+  <licenses>
+    <license>
+      <name>The Jython License</name>
+      <url>http://www.jython.org/license.html</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <scm>
+    <url>scm:git:git@github.com:tbekolay/jnumeric.git</url>
+    <connection>scm:git:git@github.com:tbekolay/jnumeric.git</connection>
+    <developerConnection>scm:git:git@github.com:tbekolay/jnumeric.git</developerConnection>
+    <tag>HEAD</tag>
+  </scm>
+
+  <issueManagement>
+    <system>Github Issues</system>
+    <url>http://github.com/tbekolay/jnumeric/issues</url>
+  </issueManagement>
+
+  <developers>
+    <developer>
+      <id>tim-hochberg</id>
+      <name>Tim Hochberg</name>
+      <email>tim.hochberg@ieee.org </email>
+    </developer>
+    <developer>
+      <id>fgibbons</id>
+      <name>Frank Gibbons</name>
+      <email>fgibbons@hms.harvard.edu</email>
+    </developer>
+    <developer>
+      <id>dbagnell</id>
+      <name>Drew Bagnell</name>
+      <email>dbagnell@ri.cmu.edu</email>
+    </developer>
+    <developer>
+      <id>lemire</id>
+      <name>Daniel Lemire</name>
+      <email>lemire@ondelette.com</email>
+    </developer>
+    <developer>
+      <id>tbekolay</id>
+      <name>Trevor Bekolay</name>
+      <email>tbekolay@gmail.com</email>
+    </developer>
+  </developers>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.python</groupId>
+      <artifactId>jython-standalone</artifactId>
+      <version>2.5.2</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <testResources>
+      <testResource>
+        <directory>src/test/jython</directory>
+      </testResource>
+    </testResources>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>2.6</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>properties</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.2.1</version>
+        <executions>
+          <execution>
+            <phase>test</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <executable>java</executable>
+          <workingDirectory>${basedir}/target/test-classes</workingDirectory>
+          <arguments>
+            <argument>-Dpython.path=${project.build.outputDirectory}</argument>
+            <argument>-jar</argument>
+            <argument>${org.python:jython-standalone:jar}</argument>
+            <argument>run_all_tests.py</argument>
+            <argument>-v</argument>
+          </arguments>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.4</version>
+      </plugin>
+    </plugins>
+
+    <pluginManagement>
+      <plugins>
+        <!--This plugin's configuration is used to store Eclipse m2e settings 
+          only. It has no influence on the Maven build itself. -->
+        <plugin>
+          <groupId>org.eclipse.m2e</groupId>
+          <artifactId>lifecycle-mapping</artifactId>
+          <version>1.0.0</version>
+          <configuration>
+            <lifecycleMappingMetadata>
+              <pluginExecutions>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <versionRange>[2.6,)</versionRange>
+                    <goals>
+                      <goal>properties</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore></ignore>
+                  </action>
+                </pluginExecution>
+              </pluginExecutions>
+            </lifecycleMappingMetadata>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>release-sign-artifacts</id>
+      <activation>
+        <property>
+          <name>performRelease</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>1.1</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>
