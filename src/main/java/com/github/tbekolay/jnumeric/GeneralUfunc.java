@@ -13,10 +13,16 @@ package com.github.tbekolay.jnumeric;
 import org.python.core.PyObject;
 import org.python.core.PyType;
 
-// XXX migrate various pieces of PyMultiarray to here.
+// TODO migrate various pieces of PyMultiarray to here.
+/**
+ * Class to encapsulate PyMultiarray logic. Currently unused.
+ */
 public class GeneralUfunc extends PyObject {
     private static final long serialVersionUID = 2988200647889866329L;
 
+    /**
+     * Simple constructor, no special logic.
+     */
     public GeneralUfunc() {
         super(PyType.fromClass(GeneralUfunc.class));
         this.javaProxy = this;

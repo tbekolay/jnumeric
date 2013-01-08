@@ -14,12 +14,15 @@ import org.python.core.Py;
 import org.python.core.PyObject;
 import org.python.core.PyType;
 
-// There are faster ways to do much of this, but I'm writing the simplest
-// possible FFT.
-
+/**
+ * A simple implementation of the fast fourier transform.
+ */
 public class FFT extends PyObject {
     private static final long serialVersionUID = 5458819189675402442L;
 
+    /**
+     * Simple constructor, no special logic.
+     */
     public FFT() {
         super(PyType.fromClass(FFT.class));
         this.javaProxy = this;
@@ -84,10 +87,22 @@ public class FFT extends PyObject {
         return a;
     }
 
+    /**
+     * Perform the fast fourier transform.
+     * 
+     * @param o Input PyMultiArray
+     * @return The result of the FFT
+     */
     static public PyMultiarray fft(final PyObject o) {
         return FFT._fft(o, false);
     }
 
+    /**
+     * Perform the inverse fast fourier transform
+     * 
+     * @param o Input PyMultiArray
+     * @return The result of the inverse FFT
+     */
     static public PyMultiarray inverse_fft(final PyObject o) {
         return FFT._fft(o, true);
     }

@@ -36,11 +36,20 @@ import org.python.core.__builtin__;
 // TODO Fix up object behaviour (doesn't work correctly(?) with e.g, tuples).
 // TODO Pow uses Math.pow for integer types -- should be fixed to use an integer
 //      pow.
-// Strategy: define Multiarray._pow(double, double), Multiarray._pow(int, int),
-// etc and use instead of
-// Math.pow. (double and float cases would use math.pow). (Look at CNumeric
-// umath).
+//      Strategy: define Multiarray._pow(double, double), Multiarray._pow(int, int),
+//      etc and use instead of
+//      Math.pow. (double and float cases would use math.pow). (Look at CNumeric
+//      umath).
 
+/**
+ * The container for n-dimensional arrays.
+ * 
+ * The array itself is stored as a one-dimensional array;
+ * the mathematical routines manipulating these arrays
+ * must treat it appropriately based on their shape
+ * and stride.
+ * 
+ */
 public class PyMultiarray extends PySequence {
 
     //
@@ -50,22 +59,26 @@ public class PyMultiarray extends PySequence {
 
     private static final long serialVersionUID = 4524353697384690762L;
 
-    // Class variables.
-    // Python function that are used to format arrays for str([0]) and
-    // repr([1]).
-    // static PyFunction [] str_functions = {null, null};
+    /**
+     * Used to format arrays for str([0]) and repr([1])
+     */
     public static int maxLineWidth = 77;
+    /**
+     * Used to format arrays for str([0]) and repr([1])
+     */
     public static int precision = 8;
+    /**
+     * Used to format arrays for str([0]) and repr([1])
+     */
     public static boolean suppressSmall = false;
-    public static final PyType ATYPE = PyType.fromClass(PyMultiarray.class);
-    
+
     /**
      * Python class of PyMultiarray.
      * 
      * @see PyObject
      */
-    // public static PyClass __class__;
-    /** The docstring. */
+    public static final PyType ATYPE = PyType.fromClass(PyMultiarray.class);
+    
     String docString = "PyMultiarray methods:\n" +
             "	astype(typecode)]\n" +
             "	itemsize()\n" +
@@ -75,26 +88,44 @@ public class PyMultiarray extends PySequence {
             "	iscontiguous()\n" +
             "	tostring()\n" +
             "	tolist()\n";
-    // Instance variables.
-    /** 1D Java array that holds array data. May be shared between arrays. */
+    
+    /**
+     * 1D Java array that holds array data. May be shared between arrays.
+     */
     Object data;
+    
     /**
      * Type code of the array. Allowable types are:
-     * '1':Byte, 's':Short, 'i':Int, 'l':Long,
-     * 'f':Float, 'd':Double, 'F':ComplexFloat, 'D':ComplexDouble,
-     * 'O':PyObject.
+     *   '1':Byte
+     *   's':Short
+     *   'i':Int
+     *   'l':Long
+     *   'f':Float
+     *   'd':Double
+     *   'F':ComplexFloat
+     *   'D':ComplexDouble
+     *   'O':PyObject
      */
     char _typecode;
+    
     // Start, dimensions, and strides determine the structure of the array.
     int start;
     int[] dimensions;
     int[] strides;
-    // Many functions work only on contiguous arrays, so we keep track of that
-    // here.
+    
+    // Many functions work only on contiguous arrays,
+    // so we keep track of that here.
     boolean isContiguous;
 
-    // Constructors.
-    /** Create a multiarray object given values of instance variables. */
+    /**
+     * Create a multiarray object given values of instance variables.
+     * 
+     * @param data The 1D array
+     * @param _typecode Datatype of the array
+     * @param start Start of the array
+     * @param dimensions Dimensionality
+     * @param strides Strides
+     */
     public PyMultiarray(final Object data, final char _typecode, final int start, final int[] dimensions, final int[] strides) {
         super(PyMultiarray.ATYPE);
         this.javaProxy = this;
@@ -107,7 +138,11 @@ public class PyMultiarray extends PySequence {
         this.setIsContiguous();
     }
 
-    /** Create a multiarray object from a sequence and a type. */
+    /**
+     * Create a multiarray object from a sequence and a type. 
+     * @param seq Array-like
+     * @param typecode Datatype of the array
+     */
     public PyMultiarray(final PyObject seq, final char typecode) {
         super(PyMultiarray.ATYPE);
         this.javaProxy = this;
@@ -120,7 +155,10 @@ public class PyMultiarray extends PySequence {
         this.isContiguous = a.isContiguous;
     }
 
-    /** Create a multiarray object from a sequence. */
+    /**
+     * Create a multiarray object from a sequence. 
+     * @param seq Array-like
+     */
     public PyMultiarray(final PyObject seq) {
         super(PyMultiarray.ATYPE);
         this.javaProxy = this;
@@ -133,7 +171,9 @@ public class PyMultiarray extends PySequence {
         this.isContiguous = a.isContiguous;
     }
 
-    /** Create a multiarray object from a sequence (the slow general way) */
+    /**
+     * Create a multiarray object from a sequence (the slow general way)
+     */
     private static PyMultiarray seqToMultiarray(final PyObject seq, char typecode) {
         final int[] newShape = PyMultiarray.shapeOf(seq);
         final PyObject[] flatData = PyMultiarray.seqToObjects(
@@ -163,15 +203,16 @@ public class PyMultiarray extends PySequence {
         return newArray;
     }
 
-    private static char arrayClassToType(final Class klass) {
-        if (klass.isArray()) { return PyMultiarray.arrayClassToType(klass
-                .getComponentType()); }
+    private static char arrayClassToType(final Class<?> klass) {
+        if (klass.isArray()) {
+            return PyMultiarray.arrayClassToType(klass.getComponentType());
+        }
         return PyMultiarray.classToType(klass);
     }
 
     private static int[] arrayDataToShape(final Object data, final int depth) {
         final int length = Array.getLength(data);
-        final Class klass = data.getClass().getComponentType();
+        final Class<?> klass = data.getClass().getComponentType();
         // If data is an array of arrays:
         if (length != 0 && klass.isArray()) {
             final int[] shape = PyMultiarray.arrayDataToShape(
@@ -199,7 +240,7 @@ public class PyMultiarray extends PySequence {
     }
 
     private static int arrayDataToFlat(final Object data, final Object flat, int offset) {
-        final Class klass = data.getClass().getComponentType();
+        final Class<?> klass = data.getClass().getComponentType();
         final int length = Array.getLength(data);
         if (klass.isArray()) {
             for (int i = 0; i < length; i++) {
@@ -215,8 +256,8 @@ public class PyMultiarray extends PySequence {
     }
 
     /**
-     * Create a multiarray object from a PyArray (jarray) don't copy unless
-     * forced to.
+     * Create a multiarray object from a PyArray (jarray).
+     * Don't copy unless forced to.
      */
     private static PyMultiarray arrayToMultiarray(final PyArray seq, final char typecode) {
         Object data = seq.__tojava__(Object.class);
@@ -243,8 +284,11 @@ public class PyMultiarray extends PySequence {
 
     /**
      * Create a new multiarray from <code>seq</code> of type
-     * <code>typecode</code> ('/0' indicates the type should be inferred from
+     * <code>typecode</code> ('\0' indicates the type should be inferred from
      * seq).
+     * @param seq Array-like
+     * @param typecode Datatype of the array
+     * @return The new multiarray
      */
     public static PyMultiarray array(final PyObject seq, final char typecode) {
         if (seq instanceof PyMultiarray) {
@@ -268,6 +312,8 @@ public class PyMultiarray extends PySequence {
     /**
      * Create a new multiarray from <code>seq</code>. The type is determined by
      * examining <code>seq</code>.
+     * @param seq Array-like
+     * @return The new multiarray
      */
     public static PyMultiarray array(final PyObject seq) {
         return PyMultiarray.array(seq, '\0');
@@ -276,6 +322,10 @@ public class PyMultiarray extends PySequence {
     /**
      * Create a new multiarray of zeros with shape <code>shape</code> of type
      * <code>typecode</code>.
+     * @param shape A tuple or list describing the dimensionality of the array
+     *   (e.g., (10,) for a 10-element vector, [2, 5] for a 2 by 5 matrix))
+     * @param typecode Datatype of the array
+     * @return The new multiarray
      */
     public static PyMultiarray zeros(final int[] shape, final char typecode) {
         // int length = Math.max(1,
@@ -299,6 +349,10 @@ public class PyMultiarray extends PySequence {
     /**
      * Create a new multiarray of zeros with shape <code>shape</code> of type
      * <code>typecode</code>.
+     * @param shape A tuple or list describing the dimensionality of the array
+     *   (e.g., (10,) for a 10-element vector, [2, 5] for a 2 by 5 matrix))
+     * @param typecode Datatype of the array
+     * @return The new multiarray
      */
     public static PyMultiarray zeros(final Object shape, final char typecode) {
         return PyMultiarray.zeros(
@@ -309,6 +363,9 @@ public class PyMultiarray extends PySequence {
     /**
      * Create a new multiarray of zeros with shape <code>shape</code> with type
      * inferenced from shape.
+     * @param shape A tuple or list describing the dimensionality of the array
+     *   (e.g., (10,) for a 10-element vector, [2, 5] for a 2 by 5 matrix))
+     * @return The new multiarray
      */
     public static PyMultiarray zeros(final PyObject shape) {
         return PyMultiarray.zeros(
@@ -329,7 +386,15 @@ public class PyMultiarray extends PySequence {
         return a.astype(typecode);
     }
 
-    /** Like above, but with the semantics of Python range. */
+    /**
+     * Create a range of numbers in [start, stop) with the given step and
+     * typecode.
+     * @param start Start of the range (included)
+     * @param stop End of the range (not included)
+     * @param step Stepsize between the start and stop
+     * @param typecode Datatype of the array
+     * @return The new multiarray
+     */
     public static PyMultiarray arrayRange(PyObject start, PyObject stop, final PyObject step, char typecode) {
         if (stop instanceof PyNone) {
             stop = start;
@@ -358,7 +423,12 @@ public class PyMultiarray extends PySequence {
         return a;
     }
 
-    /** Create a set of indices for use with fromFunction. */
+    /**
+     * Create a set of indices for use with fromFunction. 
+     * @param o The input array 
+     * @param typecode Datatype of the indices
+     * @return The set of indices
+     */
     public static PyMultiarray indices(final PyObject o, char typecode) {
         final int[] baseShape = PyMultiarray.objectToInts(o, true);
         final int[] shape = new int[baseShape.length + 1];
@@ -385,6 +455,10 @@ public class PyMultiarray extends PySequence {
     /**
      * Create an array by calling function the coordinates of each element of an
      * array with the given shape.
+     * @param function The function to call
+     * @param shape A tuple or list describing the dimensionality of the array
+     *   (e.g., (10,) for a 10-element vector, [2, 5] for a 2 by 5 matrix))
+     * @return The new multiarray
      */
     public static PyMultiarray fromFunction(final PyObject function, final PyObject shape) {
         final PyMultiarray index = PyMultiarray.indices(shape, '\0');
@@ -400,7 +474,7 @@ public class PyMultiarray extends PySequence {
                 new int[] { -1 });
         PyObject[] args = new PyObject[0];
         final String[] keywords = new String[0];
-        final Class objectArray = args.getClass();
+        final Class<? extends PyObject[]> objectArray = args.getClass();
         for (int i = 0; i < flatResult.dimensions[0]; i++) {
             args = (PyObject[]) ((PyMultiarray) flatIndex.get(i)).tolist()
                     .__tojava__(objectArray);
@@ -411,7 +485,10 @@ public class PyMultiarray extends PySequence {
 
     /**
      * Create a 1D array from a string.
-     * see toString
+     * @see #toString() 
+     * @param s String from which to create the array
+     * @param type Datatype of the array
+     * @return The new multiarray
      */
     public static PyMultiarray fromString(final String s, final char type) {
         final int itemsize = PyMultiarray.typeToNBytes(type)
@@ -432,22 +509,29 @@ public class PyMultiarray extends PySequence {
 
     /**
      * Return <code>seq</code> if it's a multiarray of type
-     * <code>typecode</code>,
-     * otherwise returns a new multiarray.
+     * <code>typecode</code>, otherwise returns a new multiarray.
+     * @param seq Array-like
+     * @param typecode Datatype of the new array
+     * @return The new multiarray
      */
     public static PyMultiarray asarray(final PyObject seq, final char typecode) {
         if (seq instanceof PyMultiarray
                 &&
-                (typecode == '\0' || ((PyMultiarray) seq)._typecode == typecode)) { return (PyMultiarray) seq; }
-        if (seq instanceof PyArray) { return PyMultiarray.arrayToMultiarray(
-                (PyArray) seq,
-                typecode); }
+                (typecode == '\0' || ((PyMultiarray) seq)._typecode == typecode)) {
+            return (PyMultiarray) seq;
+        }
+        
+        if (seq instanceof PyArray) {
+            return PyMultiarray.arrayToMultiarray((PyArray) seq, typecode);
+        }
         return PyMultiarray.array(seq, typecode);
     }
 
     /**
      * Return <code>seq</code> if it's a multiarray, otherwise returns a new
      * multiarray.
+     * @param seq Array-like
+     * @return The new multiarray
      */
     public static PyMultiarray asarray(final PyObject seq) {
         if (seq instanceof PyMultiarray) { return (PyMultiarray) seq; }
@@ -457,6 +541,9 @@ public class PyMultiarray extends PySequence {
     /**
      * Return <code>seq</code> if it's a contiguous multiarray, otherwise
      * returns a new multiarray.
+     * @param seq Array-like
+     * @param _typecode Datatype (a single character)
+     * @return The new multiarray
      */
     public static PyMultiarray ascontiguous(final PyObject seq, final char _typecode) {
         if (seq instanceof PyMultiarray && ((PyMultiarray) (seq)).isContiguous
@@ -467,8 +554,9 @@ public class PyMultiarray extends PySequence {
 
     /**
      * Return <code>seq</code> if it's a contiguous multiarray of type
-     * <code>typecode</code>,
-     * otherwise returns a new multiarray.
+     * <code>typecode</code>, otherwise returns a new multiarray.
+     * @param seq Array-like
+     * @return The new multiarray
      */
     public static PyMultiarray ascontiguous(final PyObject seq) {
         if (seq instanceof PyMultiarray && ((PyMultiarray) (seq)).isContiguous) { return (PyMultiarray) seq; }
@@ -481,34 +569,45 @@ public class PyMultiarray extends PySequence {
 
     /**
      * Return the typecode.
-     * 
-     * @see _typecode
+     * @return The typecode
+     * @see #_typecode
      */
     public char typecode() {
         return this._typecode;
     }
 
-    /** Return the size (in bytes) of the items. */
+    /**
+     * Return the size (in bytes) of the items.
+     * @return The size (in bytes) of the items
+     */
     public int itemsize() {
         return PyMultiarray.typeToNElements(this._typecode)
                 * PyMultiarray.typeToNBytes(this._typecode);
     }
 
-    /** Return (1) if the array is contiguous, 0 otherwise. */
+    /** 
+     * Return (1) if the array is contiguous, 0 otherwise. 
+     * @return 1 if the array is contiguous, 0 otherwise
+     */
     public int iscontiguous() {
         return this.isContiguous ? 1 : 0;
     }
 
     /**
-     * Return multiarray coerced to <code>type</code>
+     * Return multiarray coerced to <code>type</code>.
      * 
-     * Note that CNumeric does the equivalen of return array(this, type) here.
+     * Note that CNumeric does the equivalent of return array(this, type) here.
+     * @param type The output type
+     * @return The new multiarray
      */
     public PyMultiarray astype(final char type) {
         return PyMultiarray.asarray(this, type);
     }
 
-    /** Return multiarray data represented as a string. */
+    /**
+     * Return multiarray data represented as a string.
+     * @return The string representation
+     */
     public String tostring() {
         try {
             return new String(PyMultiarray.toByteArray(

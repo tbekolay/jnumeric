@@ -24,32 +24,119 @@ public class BinaryUfunc extends KeywordFunction {
 
     private static final long serialVersionUID = 2592949830660376736L;
 
+    /**
+     * Adds two arrays.
+     */
     static final public BinaryFunction add = new Add();
+    
+    /**
+     * Subtracts two arrays.
+     */
     static final public BinaryFunction subtract = new Subtract();
+    
+    /**
+     * Multiplies two arrays.
+     */
     static final public BinaryFunction multiply = new Multiply();
+    
+    /**
+     * Divides two arrays.
+     */
     static final public BinaryFunction divide = new Divide();
+    
+    /**
+     * Finds the remainder after dividing two arrays.
+     */
     static final public BinaryFunction remainder = new Remainder();
+    
+    /**
+     * Takes an array to the power of another.
+     */
     static final public BinaryFunction power = new Power();
+    
 
+    /**
+     * Finds the maximum values between two arrays.
+     */
     static final public BinaryFunction maximum = new Maximum();
+    
+    /**
+     * Finds the minimum values between two arrays.
+     */
     static final public BinaryFunction minimum = new Minimum();
 
+    
+    /**
+     * Finds where two arrays are equal.
+     */
     static final public BinaryFunction equal = new Equal();
+    
+    /**
+     * Finds where two arrays are not equal.
+     */
     static final public BinaryFunction notEqual = new NotEqual();
+    
+    /**
+     * Finds where an array is less than another array.
+     */
     static final public BinaryFunction less = new Less();
+    
+    /**
+     * Finds where an array is less than or equal to another array.
+     */
     static final public BinaryFunction lessEqual = new LessEqual();
+    
+    /**
+     * Finds where an array is greater than another array.
+     */
     static final public BinaryFunction greater = new Greater();
+    
+    /**
+     * Finds where an array is greater than or equal to another array.
+     */
     static final public BinaryFunction greaterEqual = new GreaterEqual();
+    
 
+    /**
+     * Takes the logical and of two binary arrays.
+     */
     static final public BinaryFunction logicalAnd = new LogicalAnd();
+    
+    /**
+     * Takes the logical or of two binary arrays.
+     */
     static final public BinaryFunction logicalOr = new LogicalOr();
+    
+    /**
+     * Takes the logical exclusive-or of two binary arrays.
+     */
     static final public BinaryFunction logicalXor = new LogicalXor();
+    
 
+    /**
+     * Does a bitwise and between two arrays.
+     */
     static final public BinaryFunction bitwiseAnd = new BitwiseAnd();
+    
+    /**
+     * Does a bitwise or between two arrays.
+     */
     static final public BinaryFunction bitwiseOr = new BitwiseOr();
+    
+    /**
+     * Does a bitwise exclusive-or between two arrays.
+     */
     static final public BinaryFunction bitwiseXor = new BitwiseXor();
+    
 
+    /**
+     * Finds the index of the largest elements between two arrays.
+     */
     static final public BinaryFunction argMax = new ArgMax();
+    
+    /**
+     * Finds the index of the smallest elements between two arrays.
+     */
     static final public BinaryFunction argMin = new ArgMin();
 
     String docString() {
@@ -74,6 +161,11 @@ public class BinaryUfunc extends KeywordFunction {
 
     BinaryFunction function;
 
+    /**
+     * Wraps a BinaryFunction into a universal function.
+     * 
+     * @param function The function to wrap
+     */
     public BinaryUfunc(final BinaryFunction function) {
         this.function = function;
         this.argNames = new String[] { "a", "b", "result" };
@@ -86,6 +178,14 @@ public class BinaryUfunc extends KeywordFunction {
         return super.__findattr_ex__(name);
     }
 
+    /**
+     * Takes the outer product of a and b. The new results shape will 
+     * be the same as a.shape + b.shape (where plus means concatenate, not add!)
+     * 
+     * @param poa PyMultiArray a
+     * @param pob PyMultiArray b
+     * @return Outer produce of poa and pob.
+     */
     public PyObject outer(final PyObject poa, final PyObject pob) {
         final PyMultiarray a = PyMultiarray.asarray(poa);
         final PyMultiarray b = PyMultiarray.asarray(pob);
@@ -121,13 +221,25 @@ public class BinaryUfunc extends KeywordFunction {
         return PyMultiarray.reshape(result, newDimensions);
     }
 
+    /**
+     * This is a weird function, and most people should just ignore it. It will
+     * reduce a to each of the given indices so that as new size along the given
+     * axis will be the same as the length of indices.
+     * If axis is not supplied it defaults to zero.
+     * 
+     * @param po Input PyMultiArray
+     * @param indices The indices to reduce to
+     * @param axis Axis along which to reduce (default: 0)
+     * @return The reduced array, with size == indices.length
+     */
     public PyObject reduceat(final PyObject po, final int[] indices, int axis) {
         // This could probably be made faster by doing it directly,
         // but I don't think I care.
         PyMultiarray a = PyMultiarray.ascontiguous(po);
         axis = (axis < 0) ? axis + a.dimensions.length : axis;
-        if (axis < 0 || axis >= a.dimensions.length) { throw Py
-                .ValueError("axis out of legal range"); }
+        if (axis < 0 || axis >= a.dimensions.length) {
+            throw Py.ValueError("axis out of legal range");
+        }
         final int[] eIndices = new int[indices.length + 1];
         eIndices[indices.length] = a.dimensions[axis];
         for (int i = 0; i < indices.length; i++) {
@@ -146,10 +258,27 @@ public class BinaryUfunc extends KeywordFunction {
         return result;
     }
 
+    /**
+     * Overloaded function for if no axis is passed. Defaults to 0.
+     * @param po Input PyMultiArray
+     * @param indices The indices to reduce to
+     * @return result of reduceat(po, indices, 0)
+     * @see #reduceat(PyObject, int[], int)
+     */
     public PyObject reduceat(final PyObject po, final int[] indices) {
         return this.reduceat(po, indices, 0);
     }
 
+    /**
+     * Works just like reduce(ufunc, a, [ufunc's identity element]) except
+     * you get to choose the axis to perform the reduction along. Note that
+     * if the length of a long axis is 0, then the appropriate identity element
+     * for the ufunc will be returned.
+     * 
+     * @param po Input PyMultiArray
+     * @param axis Axis along which to reduce (default: 0)
+     * @return Result of reducing the ufunc
+     */
     public PyObject reduce(final PyObject po, int axis) {
         PyMultiarray a = PyMultiarray.asarray(po);
         if (axis < 0) {
@@ -191,10 +320,24 @@ public class BinaryUfunc extends KeywordFunction {
                                             // accumulate
     }
 
+    /**
+     * Overloaded reduce, defaults axis to 0.
+     * @param po Input PyMultiArray
+     * @return Result of calling reduce(po, 0)
+     * @see #reduce(PyObject, int)
+     */
     public PyObject reduce(final PyObject po) {
         return this.reduce(po, 0);
     }
 
+    /**
+     * This is the same as reduce, except that all the intermediate results are
+     * kept along the way.
+     * 
+     * @param po Input PyMultiArray
+     * @param axis Axis over which to reduce (default: 0)
+     * @return The intermediate results of reducing po
+     */
     public PyObject accumulate(final PyObject po, int axis) {
         PyMultiarray a = PyMultiarray.asarray(po);
         if (axis < 0) {
@@ -233,6 +376,12 @@ public class BinaryUfunc extends KeywordFunction {
                                             // accumulate
     }
 
+    /**
+     * Overloaded accumulate, defaults axis to 0.
+     * @param po Input PyMultiArray
+     * @return Result of calling accumulate(po, 0)
+     * @see #accumulate(PyObject, int)
+     */
     public PyObject accumulate(final PyObject po) {
         return this.accumulate(po, 0);
     }
@@ -243,8 +392,9 @@ public class BinaryUfunc extends KeywordFunction {
                     PyMultiarray.asarray(args[1]));// __call__(args[0],
                                                    // args[1]);
         } else {
-            if (!(args[2] instanceof PyMultiarray)) { throw Py
-                    .ValueError("result must be an array"); }
+            if (!(args[2] instanceof PyMultiarray)) {
+                throw Py.ValueError("result must be an array");
+            }
             final PyMultiarray a = PyMultiarray.asarray(args[0]);
             final PyMultiarray b = PyMultiarray.asarray(args[1]);
             final PyMultiarray result = (PyMultiarray) args[2];

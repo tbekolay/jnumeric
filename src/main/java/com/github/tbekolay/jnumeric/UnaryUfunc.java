@@ -10,47 +10,144 @@ import org.python.core.PyType;
 
 // TODO Get rid of dependance on umath
 // TODO Change format of calls to Complex(a, r) where result is stuff into r.
-// this way two argument ufuncs could be made to work correctly also.
+//      this way two argument ufuncs could be made to work correctly also.
 // TODO Change __call__ signature to official JPython call signature.
 
+/**
+ * Function that accepts one PyMultiarray.
+ */
 public class UnaryUfunc extends PyObject {
 
     private static final long serialVersionUID = 5249208075619641728L;
 
+    /**
+     * Returns arccos(a) and stores the result in r if supplied.
+     */
     static final public UnaryFunction arccos = new Arccos();
+    
+    /**
+     * Returns arccosh(a) and stores the result in r if supplied.
+     */
     static final public UnaryFunction arccosh = new Arccosh();
+    
+    /**
+     * Returns arcsin(a) and stores the result in r if supplied.
+     */
     static final public UnaryFunction arcsin = new Arcsin();
+    
+    /**
+     * Returns arcsinh(a) and stores the result in r if supplied.
+     */
     static final public UnaryFunction arcsinh = new Arcsinh();
+    
+    /**
+     * Returns arctan(a) and stores the result in r if supplied.
+     */
     static final public UnaryFunction arctan = new Arctan();
+    
+    /**
+     * Returns arctanh(a) and stores the result in r if supplied.
+     */
     static final public UnaryFunction arctanh = new Arctanh();
+    
+    /**
+     * Returns ceil(a) and stores the result in r if supplied.
+     */
     static final public UnaryFunction ceil = new Ceil();
+    
+    /**
+     * Returns conjugate(a) and stores the result in r if supplied.
+     */
     static final public UnaryFunction conjugate = new Conjugate();
+    
+    /**
+     * Returns cos(a) and stores the result in r if supplied.
+     */
     static final public UnaryFunction cos = new Cos();
+    
+    /**
+     * Returns cosh(a) and stores the result in r if supplied.
+     */
     static final public UnaryFunction cosh = new Cosh();
+    
+    /**
+     * Returns exp(a) and stores the result in r if supplied.
+     */
     static final public UnaryFunction exp = new Exp();
+    
+    /**
+     * Returns floor(a) and stores the result in r if supplied.
+     */
     static final public UnaryFunction floor = new Floor();
+    
+    /**
+     * Returns imaginary(a) and stores the result in r if supplied.
+     */
     static final public UnaryFunction imaginary = new Imaginary();
+    
+    /**
+     * Returns log(a) and stores the result in r if supplied.
+     */
     static final public UnaryFunction log = new Log();
+    
+    /**
+     * Returns log10(a) and stores the result in r if supplied.
+     */
     static final public UnaryFunction log10 = new Log10();
+    
+    /**
+     * Returns the logical inverse of a and stores the result in r if supplied.
+     */
     static final public UnaryFunction logicalNot = new LogicalNot();
+    
+    /**
+     * Returns real(a) and stores the result in r if supplied.
+     */
     static final public UnaryFunction real = new Real();
+    
+    /**
+     * Returns sin(a) and stores the result in r if supplied.
+     */
     static final public UnaryFunction sin = new Sin();
+    
+    /**
+     * Returns sinh(a) and stores the result in r if supplied.
+     */
     static final public UnaryFunction sinh = new Sinh();
+    
+    /**
+     * Returns sqrt(a) and stores the result in r if supplied.
+     */
     static final public UnaryFunction sqrt = new Sqrt();
+    
+    /**
+     * Returns tan(a) and stores the result in r if supplied.
+     */
     static final public UnaryFunction tan = new Tan();
+    
+    /**
+     * Returns tanh(a) and stores the result in r if supplied.
+     */
     static final public UnaryFunction tanh = new Tanh();
 
     UnaryFunction function;
-
-    @Override public PyObject __findattr_ex__(final String name) {
-        if (name == "__doc__") { return new PyString(this.function.docString()); }
-        return super.__findattr_ex__(name);
-    }
-
+    
+    /**
+     * Wraps a UnaryFunction into a universal function.
+     * 
+     * @param function The function to wrap
+     */
     public UnaryUfunc(final UnaryFunction function) {
         super(PyType.fromClass(UnaryFunction.class));
         this.javaProxy = this;
         this.function = function;
+    }
+
+    @Override public PyObject __findattr_ex__(final String name) {
+        if (name == "__doc__") {
+            return new PyString(this.function.docString());
+        }
+        return super.__findattr_ex__(name);
     }
 
     @Override public PyObject __call__(final PyObject o) {
@@ -84,12 +181,16 @@ public class UnaryUfunc extends PyObject {
         return PyMultiarray.returnValue(result);
     }
 
-    // Two argument unary functions are provided for compatibility with
-    // CNumeric. As implemented, they are no more efficient in memory usage
-    // or speed than one argument unary functions (and perhaps less so).
-    // However, I have never used a two argument unary ufunc, so I'm not too
-    // concerned. However if people complain I suppose I'll do something
-    // about it. (Nah I don't sound defensive!)
+
+    /**
+     * Two argument unary functions are provided for compatibility with
+     * CNumeric. As implemented, they are no more efficient in memory usage
+     * or speed than one argument unary functions (and perhaps less so).
+     * 
+     * @param o Input array
+     * @param result Array to store the result
+     * @return The result, which is the same as result
+     */
     public PyObject __call__(final PyObject o, final PyMultiarray result) {
         PyMultiarray.copyAToB(PyMultiarray.asarray(this.__call__(o)), result);
         return result;
@@ -111,8 +212,8 @@ class UnaryFunction {
     static final PyMultiarray cp1_2 = PyMultiarray.array(new PyComplex(0.5, 0));
     static final PyMultiarray cp2 = PyMultiarray.array(new PyComplex(2, 0));
 
-    // a is used as scratch space by these functions, so make sure to pass a
-    // copy!
+    // a is used as scratch space by these functions,
+    // so make sure to pass a copy!
     PyMultiarray Double(final PyMultiarray a) {
         throw Py.NotImplementedError("Double not implemented");
     }
@@ -131,8 +232,6 @@ class UnaryFunction {
     }
 }
 
-// TODO Someday the calls to umath should be removed from these unary functions.
-
 final class Arccos extends UnaryFunction {
     @Override String docString() {
         return "arccos(a [,r]) returns arccos(a) and stores the result in r if supplied.\n";
@@ -146,20 +245,24 @@ final class Arccos extends UnaryFunction {
     }
 
     @Override public PyMultiarray ComplexDouble(final PyMultiarray a) {
+        double re, re1, re2, re3, re4;
+        double im, im1, im2, im3, im4;
+        double mag, phi;
+        
         for (int i = 0; i < Array.getLength(a.data); i += 2) {
             // arccos(z) = -j*log(z + j*sqrt(1 - z**2)
-            final double re = Array.getDouble(a.data, i);
-            final double im = Array.getDouble(a.data, i + 1);
-            final double re1 = 1 + im * im - re * re;
-            final double im1 = -2 * im * re;
-            final double mag = Math.pow(re1 * re1 + im1 * im1, 0.25);
-            final double phi = Math.atan2(im1, re1) / 2.;
-            final double re2 = mag * Math.cos(phi);
-            final double im2 = mag * Math.sin(phi);
-            final double re3 = re - im2;
-            final double im3 = im + re2;
-            final double re4 = Math.log(re3 * re3 + im3 * im3) / 2.;
-            final double im4 = Math.atan2(im3, re3);
+            re = Array.getDouble(a.data, i);
+            im = Array.getDouble(a.data, i + 1);
+            re1 = 1 + im * im - re * re;
+            im1 = -2 * im * re;
+            mag = Math.pow(re1 * re1 + im1 * im1, 0.25);
+            phi = Math.atan2(im1, re1) / 2.;
+            re2 = mag * Math.cos(phi);
+            im2 = mag * Math.sin(phi);
+            re3 = re - im2;
+            im3 = im + re2;
+            re4 = Math.log(re3 * re3 + im3 * im3) / 2.;
+            im4 = Math.atan2(im3, re3);
             Array.setDouble(a.data, i, im4);
             Array.setDouble(a.data, i + 1, -re4);
         }
@@ -180,6 +283,7 @@ final class Arccosh extends UnaryFunction {
         return a;
     }
 
+    // TODO Rewrite without umath
     @Override public PyMultiarray ComplexDouble(final PyMultiarray a) {
         return PyMultiarray.asarray(Umath.log.__call__(a
                 .__add__(UnaryFunction.cpj
@@ -200,6 +304,7 @@ final class Arcsin extends UnaryFunction {
         return a;
     }
 
+    // TODO Rewrite without umath
     @Override public PyMultiarray ComplexDouble(final PyMultiarray a) {
         return PyMultiarray.asarray(UnaryFunction.cnj.__mul__(Umath.log
                 .__call__(UnaryFunction.cpj.__mul__(
@@ -222,6 +327,7 @@ final class Arcsinh extends UnaryFunction {
         return a;
     }
 
+    // TODO Rewrite without umath
     @Override public PyMultiarray ComplexDouble(final PyMultiarray a) {
         return PyMultiarray.asarray(Umath.log.__call__(
                 Umath.sqrt.__call__(UnaryFunction.cp1.__add__(a.__mul__(a)))
@@ -242,6 +348,7 @@ final class Arctan extends UnaryFunction {
         return a;
     }
 
+    // TODO Rewrite without umath
     @Override public PyMultiarray ComplexDouble(final PyMultiarray a) {
         return PyMultiarray.asarray(UnaryFunction.cpj_2.__mul__(Umath.log
                 .__call__(UnaryFunction.cpj
@@ -262,6 +369,7 @@ final class Arctanh extends UnaryFunction {
         return a;
     }
 
+    // TODO Rewrite without umath
     @Override public PyMultiarray ComplexDouble(final PyMultiarray a) {
         return PyMultiarray.asarray(UnaryFunction.cp1_2.__mul__(Umath.log
                 .__call__(UnaryFunction.cp1
@@ -271,7 +379,7 @@ final class Arctanh extends UnaryFunction {
 
 final class Ceil extends UnaryFunction {
     @Override String docString() {
-        return "ceil(a [,r]) returns floor(a) and stores the result in r if supplied.\n";
+        return "ceil(a [,r]) returns ceil(a) and stores the result in r if supplied.\n";
     }
 
     @Override public PyMultiarray Double(final PyMultiarray a) {
@@ -338,6 +446,7 @@ final class Cosh extends UnaryFunction {
         return a;
     }
 
+    // TODO Rewrite without umath
     @Override public PyMultiarray ComplexDouble(final PyMultiarray a) {
         final PyObject ea = Umath.exp.__call__(a);
         return PyMultiarray.asarray(UnaryFunction.cp1_2.__mul__(ea)
@@ -514,6 +623,7 @@ final class Sinh extends UnaryFunction {
         return a;
     }
 
+    // TODO Rewrite without umath
     @Override public PyMultiarray ComplexDouble(final PyMultiarray a) {
         final PyObject ea = Umath.exp.__call__(a);
         return PyMultiarray.asarray(UnaryFunction.cp1_2.__mul__(ea)
@@ -523,7 +633,7 @@ final class Sinh extends UnaryFunction {
 
 final class Sqrt extends UnaryFunction {
     @Override String docString() {
-        return "aqrt(a [,r]) returns sqrt(a) and stores the result in r if supplied.\n";
+        return "sqrt(a [,r]) returns sqrt(a) and stores the result in r if supplied.\n";
     }
 
     @Override public PyMultiarray Double(final PyMultiarray a) {
@@ -559,6 +669,7 @@ final class Tan extends UnaryFunction {
         return a;
     }
 
+    // TODO Rewrite without umath
     @Override public PyMultiarray ComplexDouble(final PyMultiarray a) {
         final PyMultiarray sina = Umath.sin.function.ComplexDouble(PyMultiarray
                 .array(a));
@@ -581,6 +692,7 @@ final class Tanh extends UnaryFunction {
         return a;
     }
 
+    // TODO Rewrite without umath
     @Override public PyMultiarray ComplexDouble(final PyMultiarray a) {
         final PyObject e2a = Umath.exp.__call__(UnaryFunction.cp2.__mul__(a));
         return PyMultiarray.asarray(e2a.__sub__(UnaryFunction.cp1).__div__(

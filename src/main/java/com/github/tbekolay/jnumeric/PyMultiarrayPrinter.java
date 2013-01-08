@@ -141,8 +141,22 @@ class FormatObject extends FormatFunction {
     }
 }
 
+/**
+ * Pretty printing for PyMultiarray
+ */
 public class PyMultiarrayPrinter {
 
+    /**
+     * The main function for converting an array to a string representation.
+     * 
+     * @param a The input PyMultiarray
+     * @param maxLineWidth Maximum line length to adhere to
+     * @param precision What precision should be used for floats
+     * @param suppressSmall Should small numbers be rounded to 0?
+     * @param separator String to separate array elements
+     * @param arrayOutput Print array(...)?
+     * @return The string representation
+     */
     public static String array2string(final PyMultiarray a, final int maxLineWidth, final int precision,
             final boolean suppressSmall, final String separator, final boolean arrayOutput) {
         final int[] shape = PyMultiarray.shapeOf(a);

@@ -16,17 +16,28 @@ import org.python.core.PyObject;
 import org.python.core.PyTuple;
 import org.python.core.PyType;
 
+/**
+ * The main interface to JNumeric.
+ * 
+ * Encapsulates all of the Umath and FFT functions.
+ */
 public class JNumeric extends PyObject implements ClassDictInit {
-    /**
-     * 
-     */
+
     private static final long serialVersionUID = 6654647494727325270L;
 
+    /**
+     * Simple constructor, no special logic.
+     */
     public JNumeric() {
         super(PyType.fromClass(JNumeric.class));
         this.javaProxy = this;
     }
 
+    /**
+     * Set up the class's __dict__.
+     * 
+     * @param dict The default __dict__ to modify
+     */
     public static void classDictInit(final PyObject dict) {
 
         // import modules
@@ -49,6 +60,7 @@ public class JNumeric extends PyObject implements ClassDictInit {
         dict.__setitem__("Int16", Py.newString("s"));
         dict.__setitem__("Int32", Py.newString("i"));
         dict.__setitem__("Int64", Py.newString("l"));
+        
         // I'm using Int32 here because that is the native JPython integer type
         // and the default type for
         // an integer multiarray. The documentation claims this should be "the
@@ -123,57 +135,177 @@ public class JNumeric extends PyObject implements ClassDictInit {
 
     // Numeric functions
 
+    /**
+     * arrayrange(start=0, stop, step=1, typecode=None)
+     */
     static final public PyObject arrayrange = new ArrayrangeFunction();
+    /**
+     * argmax(a, axis=-1)
+     */
     static final public PyObject argmax = new ArgmaxFunction();
+    /**
+     * argsort(a, axis=-1)
+     */
     static final public PyObject argsort = new ArgsortFunction();
+    /**
+     * argsort(a, axis=-1)
+     */
     static final public PyObject argmin = new ArgminFunction();
+    /**
+     * array(sequence, typecode=None, copy=1)
+     */
     static final public PyObject array = new ArrayFunction();
+    /**
+     * asarray(sequence, typecode=None)
+     */
     static final public PyObject asarray = new AsarrayFunction();
+    /**
+     * bitwise_not(a)
+     */
     static final public PyObject bitwise_not = new BitwiseNotFunction();
+    /**
+     * choose(a, indices)
+     */
     static final public PyObject choose = new ChooseFunction();
+    /**
+     * clip(a, a_min, a_max)
+     */
     static final public PyObject clip = new ClipFunction();
+    /**
+     * compress(condition, a, [dimension=-1])
+     */
     static final public PyObject compress = new CompressFunction();
+    /**
+     * concatenate(arrays, axis=0)
+     */
     static final public PyObject concatenate = new ConcatenateFunction();
+    /**
+     * convolve(a, b, mode=0)
+     */
     static final public PyObject convolve = new ConvolveFunction();
+    /**
+     * cross_correlate(a, b, mode=0)
+     */
     static final public PyObject cross_correlate = new Cross_correlateFunction();
+    /**
+     * diagonal(a, offset=0, axis=-2)
+     */
     static final public PyObject diagonal = new DiagonalFunction();
+    /**
+     * dot(a, b, axisA=-1, axisB=0)
+     */
     static final public PyObject dot = new DotFunction();
+    /**
+     * fromfunction(function, dimensions)
+     */
     static final public PyObject fromfunction = new FromfunctionFunction();
+    /**
+     * fromstring(string, typecode)
+     */
     static final public PyObject fromstring = new FromstringFunction();
+    /**
+     * identity(n)
+     */
     static final public PyObject identity = new IdentityFunction();
+    /**
+     * indices(dimensions, typecode=None)
+     */
     static final public PyObject indices = new IndicesFunction();
+    /**
+     * innerproduct(a, b, axisA=-1, axisB=-1)
+     */
     static final public PyObject innerproduct = new InnerproductFunction();
+    /**
+     * nonzero(a)
+     */
     static final public PyObject nonzero = new NonzeroFunction();
+    /**
+     * ones(shape, typecode=None)
+     */
     static final public PyObject ones = new OnesFunction();
+    /**
+     * repeat(a, repeats, axis=0)
+     */
     static final public PyObject repeat = new RepeatFunction();
+    /**
+     * reshape(a, shape)
+     */
     static final public PyObject reshape = new ReshapeFunction();
+    /**
+     * resize(a, shape)
+     */
     static final public PyObject resize = new ResizeFunction();
+    /**
+     * ravel(a)
+     */
     static final public PyObject ravel = new RavelFunction();
+    /**
+     * searchsorted(a, values)
+     */
     static final public PyObject searchsorted = new SearchsortedFunction();
+    /**
+     * shape(a)
+     */
     static final public PyObject shape = new ShapeFunction();
+    /**
+     * sort(a, axis=-1)
+     */
     static final public PyObject sort = new SortFunction();
+    /**
+     * take(a, indices, axis=-1)
+     */
     static final public PyObject take = new TakeFunction();
+    /**
+     * trace(a, offset=0, axis1=-2, axis1=-1)
+     */
     static final public PyObject trace = new TraceFunction();
+    /**
+     * transpose(a, axes=None)
+     */
     static final public PyObject transpose = new TransposeFunction();
+    /**
+     * where(condition, x, y)
+     */
     static final public PyObject where = new WhereFunction();
+    /**
+     * zeros(shape, typecode=None)
+     */
     static final public PyObject zeros = new ZerosFunction();
 
-    // Abbreviations.
+    // Abbreviations
 
+    /**
+     * sum(a, [axis])
+     */
     static final public PyObject sum = new SumFunction();
+    /**
+     * cumsum(a, [axis])
+     */
     static final public PyObject cumsum = new CumsumFunction();
+    /**
+     * product(a, [axis])
+     */
     static final public PyObject product = new ProductFunction();
+    /**
+     * cumproduct(a, [axis])
+     */
     static final public PyObject cumproduct = new CumproductFunction();
+    /**
+     * alltrue(a, [axis])
+     */
     static final public PyObject alltrue = new AlltrueFunction();
+    /**
+     * sometrue(a, [axis])
+     */
     static final public PyObject sometrue = new SometrueFunction();
 
+    /**
+     * DocString (JNumeric -- Numeric for the Jython platform)
+     */
     static final public String __doc__ = "JNumeric -- Numeric for the Jython platform\n";
 }
 
-class ArrayrangeFunction extends KeywordFunction {
-    /**
-     * 
-     */
+final class ArrayrangeFunction extends KeywordFunction {
     private static final long serialVersionUID = 5746081813573451761L;
 
     ArrayrangeFunction() {
@@ -198,10 +330,7 @@ class ArrayrangeFunction extends KeywordFunction {
     }
 }
 
-class ArgmaxFunction extends KeywordFunction {
-    /**
-     * 
-     */
+final class ArgmaxFunction extends KeywordFunction {
     private static final long serialVersionUID = -4129702317640731140L;
 
     ArgmaxFunction() {
@@ -217,10 +346,7 @@ class ArgmaxFunction extends KeywordFunction {
     }
 }
 
-class ArgsortFunction extends KeywordFunction {
-    /**
-     * 
-     */
+final class ArgsortFunction extends KeywordFunction {
     private static final long serialVersionUID = 306756599399721463L;
 
     ArgsortFunction() {
@@ -234,10 +360,7 @@ class ArgsortFunction extends KeywordFunction {
     }
 }
 
-class ArgminFunction extends KeywordFunction {
-    /**
-     * 
-     */
+final class ArgminFunction extends KeywordFunction {
     private static final long serialVersionUID = 8745320868186865391L;
 
     ArgminFunction() {
@@ -253,10 +376,7 @@ class ArgminFunction extends KeywordFunction {
     }
 }
 
-class ArrayFunction extends KeywordFunction {
-    /**
-     * 
-     */
+final class ArrayFunction extends KeywordFunction {
     private static final long serialVersionUID = 3022516972317954103L;
 
     ArrayFunction() {
@@ -277,10 +397,7 @@ class ArrayFunction extends KeywordFunction {
     }
 }
 
-class AsarrayFunction extends KeywordFunction {
-    /**
-     * 
-     */
+final class AsarrayFunction extends KeywordFunction {
     private static final long serialVersionUID = 4963183512231760555L;
 
     AsarrayFunction() {
@@ -297,10 +414,7 @@ class AsarrayFunction extends KeywordFunction {
     }
 }
 
-class BitwiseNotFunction extends KeywordFunction {
-    /**
-     * 
-     */
+final class BitwiseNotFunction extends KeywordFunction {
     private static final long serialVersionUID = 733464928332987972L;
 
     BitwiseNotFunction() {
@@ -314,10 +428,7 @@ class BitwiseNotFunction extends KeywordFunction {
     }
 }
 
-class ChooseFunction extends KeywordFunction {
-    /**
-     * 
-     */
+final class ChooseFunction extends KeywordFunction {
     private static final long serialVersionUID = 1636534146777194754L;
 
     ChooseFunction() {
@@ -331,10 +442,7 @@ class ChooseFunction extends KeywordFunction {
     }
 }
 
-class ClipFunction extends KeywordFunction {
-    /**
-     * 
-     */
+final class ClipFunction extends KeywordFunction {
     private static final long serialVersionUID = -8844211418827105029L;
 
     ClipFunction() {
@@ -353,14 +461,11 @@ class ClipFunction extends KeywordFunction {
     }
 }
 
-class CompressFunction extends KeywordFunction {
-    /**
-     * 
-     */
+final class CompressFunction extends KeywordFunction {
     private static final long serialVersionUID = 8669912274727022895L;
 
     CompressFunction() {
-        this.docString = "clip(condition, a, [dimension=-1])";
+        this.docString = "compress(condition, a, [dimension=-1])";
         this.argNames = new String[] { "condition", "a", "dimension" };
         this.defaultArgs = new PyObject[] { null, null, Py.newInteger(-1) };
     }
@@ -375,10 +480,7 @@ class CompressFunction extends KeywordFunction {
     }
 }
 
-class ConcatenateFunction extends KeywordFunction {
-    /**
-     * 
-     */
+final class ConcatenateFunction extends KeywordFunction {
     private static final long serialVersionUID = 7118393324382148007L;
 
     ConcatenateFunction() {
@@ -392,10 +494,7 @@ class ConcatenateFunction extends KeywordFunction {
     }
 }
 
-class ConvolveFunction extends KeywordFunction {
-    /**
-     * 
-     */
+final class ConvolveFunction extends KeywordFunction {
     private static final long serialVersionUID = -8689380547621360238L;
 
     ConvolveFunction() {
@@ -409,10 +508,7 @@ class ConvolveFunction extends KeywordFunction {
     }
 }
 
-class Cross_correlateFunction extends KeywordFunction {
-    /**
-     * 
-     */
+final class Cross_correlateFunction extends KeywordFunction {
     private static final long serialVersionUID = 993749022355592940L;
 
     Cross_correlateFunction() {
@@ -429,10 +525,7 @@ class Cross_correlateFunction extends KeywordFunction {
     }
 }
 
-class DiagonalFunction extends KeywordFunction {
-    /**
-     * 
-     */
+final class DiagonalFunction extends KeywordFunction {
     private static final long serialVersionUID = 710786726737662684L;
 
     DiagonalFunction() {
@@ -449,10 +542,7 @@ class DiagonalFunction extends KeywordFunction {
     }
 }
 
-class DotFunction extends KeywordFunction {
-    /**
-     * 
-     */
+final class DotFunction extends KeywordFunction {
     private static final long serialVersionUID = -4845146524858011834L;
 
     DotFunction() {
@@ -474,10 +564,7 @@ class DotFunction extends KeywordFunction {
     }
 }
 
-class FromfunctionFunction extends KeywordFunction {
-    /**
-     * 
-     */
+final class FromfunctionFunction extends KeywordFunction {
     private static final long serialVersionUID = -8569059879817807363L;
 
     FromfunctionFunction() {
@@ -491,10 +578,7 @@ class FromfunctionFunction extends KeywordFunction {
     }
 }
 
-class FromstringFunction extends KeywordFunction {
-    /**
-     * 
-     */
+final class FromstringFunction extends KeywordFunction {
     private static final long serialVersionUID = 134207923841227124L;
 
     FromstringFunction() {
@@ -509,10 +593,7 @@ class FromstringFunction extends KeywordFunction {
     }
 }
 
-class IdentityFunction extends KeywordFunction {
-    /**
-     * 
-     */
+final class IdentityFunction extends KeywordFunction {
     private static final long serialVersionUID = -9178247895975583251L;
 
     IdentityFunction() {
@@ -532,10 +613,7 @@ class IdentityFunction extends KeywordFunction {
     }
 }
 
-class IndicesFunction extends KeywordFunction {
-    /**
-     * 
-     */
+final class IndicesFunction extends KeywordFunction {
     private static final long serialVersionUID = 2184217250691275960L;
 
     IndicesFunction() {
@@ -552,10 +630,7 @@ class IndicesFunction extends KeywordFunction {
     }
 }
 
-class InnerproductFunction extends KeywordFunction {
-    /**
-     * 
-     */
+final class InnerproductFunction extends KeywordFunction {
     private static final long serialVersionUID = 7497182188999451403L;
 
     InnerproductFunction() {
@@ -577,10 +652,7 @@ class InnerproductFunction extends KeywordFunction {
     }
 }
 
-class NonzeroFunction extends KeywordFunction {
-    /**
-     * 
-     */
+final class NonzeroFunction extends KeywordFunction {
     private static final long serialVersionUID = 1732261811691013401L;
 
     NonzeroFunction() {
@@ -598,10 +670,7 @@ class NonzeroFunction extends KeywordFunction {
     }
 }
 
-class OnesFunction extends KeywordFunction {
-    /**
-     * 
-     */
+final class OnesFunction extends KeywordFunction {
     private static final long serialVersionUID = 3467881618102625225L;
 
     OnesFunction() {
@@ -620,10 +689,7 @@ class OnesFunction extends KeywordFunction {
     }
 }
 
-class RepeatFunction extends KeywordFunction {
-    /**
-     * 
-     */
+final class RepeatFunction extends KeywordFunction {
     private static final long serialVersionUID = -3346152024620868094L;
 
     RepeatFunction() {
@@ -637,10 +703,7 @@ class RepeatFunction extends KeywordFunction {
     }
 }
 
-class ReshapeFunction extends KeywordFunction {
-    /**
-     * 
-     */
+final class ReshapeFunction extends KeywordFunction {
     private static final long serialVersionUID = 6537950470573822590L;
 
     ReshapeFunction() {
@@ -656,10 +719,7 @@ class ReshapeFunction extends KeywordFunction {
     }
 }
 
-class ResizeFunction extends KeywordFunction {
-    /**
-     * 
-     */
+final class ResizeFunction extends KeywordFunction {
     private static final long serialVersionUID = 7092728715870395077L;
 
     ResizeFunction() {
@@ -675,10 +735,7 @@ class ResizeFunction extends KeywordFunction {
     }
 }
 
-class RavelFunction extends KeywordFunction {
-    /**
-     * 
-     */
+final class RavelFunction extends KeywordFunction {
     private static final long serialVersionUID = -8124772805856856572L;
 
     RavelFunction() {
@@ -692,10 +749,7 @@ class RavelFunction extends KeywordFunction {
     }
 }
 
-class SearchsortedFunction extends KeywordFunction {
-    /**
-     * 
-     */
+final class SearchsortedFunction extends KeywordFunction {
     private static final long serialVersionUID = -6897451098438572030L;
 
     SearchsortedFunction() {
@@ -709,10 +763,7 @@ class SearchsortedFunction extends KeywordFunction {
     }
 }
 
-class ShapeFunction extends KeywordFunction {
-    /**
-     * 
-     */
+final class ShapeFunction extends KeywordFunction {
     private static final long serialVersionUID = -6004264270333563355L;
 
     ShapeFunction() {
@@ -731,10 +782,7 @@ class ShapeFunction extends KeywordFunction {
     }
 }
 
-class SortFunction extends KeywordFunction {
-    /**
-     * 
-     */
+final class SortFunction extends KeywordFunction {
     private static final long serialVersionUID = -8748798385755543671L;
 
     SortFunction() {
@@ -748,14 +796,11 @@ class SortFunction extends KeywordFunction {
     }
 }
 
-class TakeFunction extends KeywordFunction {
-    /**
-     * 
-     */
+final class TakeFunction extends KeywordFunction {
     private static final long serialVersionUID = -2646084886841367336L;
 
     TakeFunction() {
-        this.docString = "sort(a, indices, axis=-1)";
+        this.docString = "take(a, indices, axis=-1)";
         this.argNames = new String[] { "a", "indices", "axis" };
         this.defaultArgs = new PyObject[] { null, null, Py.Zero };
     }
@@ -765,10 +810,7 @@ class TakeFunction extends KeywordFunction {
     }
 }
 
-class TraceFunction extends KeywordFunction {
-    /**
-     * 
-     */
+final class TraceFunction extends KeywordFunction {
     private static final long serialVersionUID = 1190892189817524086L;
 
     TraceFunction() {
@@ -787,10 +829,7 @@ class TraceFunction extends KeywordFunction {
     }
 }
 
-class TransposeFunction extends KeywordFunction {
-    /**
-     * 
-     */
+final class TransposeFunction extends KeywordFunction {
     private static final long serialVersionUID = -6407099071609214991L;
 
     TransposeFunction() {
@@ -818,10 +857,7 @@ class TransposeFunction extends KeywordFunction {
     }
 }
 
-class WhereFunction extends KeywordFunction {
-    /**
-     * 
-     */
+final class WhereFunction extends KeywordFunction {
     private static final long serialVersionUID = 7102514462359313033L;
 
     WhereFunction() {
@@ -836,10 +872,7 @@ class WhereFunction extends KeywordFunction {
     }
 }
 
-class ZerosFunction extends KeywordFunction {
-    /**
-     * 
-     */
+final class ZerosFunction extends KeywordFunction {
     private static final long serialVersionUID = 8468266769577881289L;
 
     ZerosFunction() {
@@ -858,10 +891,7 @@ class ZerosFunction extends KeywordFunction {
 }
 
 // Abbreviations
-class SumFunction extends KeywordFunction {
-    /**
-     * 
-     */
+final class SumFunction extends KeywordFunction {
     private static final long serialVersionUID = 1743179887623752980L;
 
     SumFunction() {
@@ -875,10 +905,7 @@ class SumFunction extends KeywordFunction {
     }
 }
 
-class CumsumFunction extends KeywordFunction {
-    /**
-     * 
-     */
+final class CumsumFunction extends KeywordFunction {
     private static final long serialVersionUID = 8556851667750567307L;
 
     CumsumFunction() {
@@ -892,10 +919,7 @@ class CumsumFunction extends KeywordFunction {
     }
 }
 
-class ProductFunction extends KeywordFunction {
-    /**
-     * 
-     */
+final class ProductFunction extends KeywordFunction {
     private static final long serialVersionUID = -864706255525505341L;
 
     ProductFunction() {
@@ -909,10 +933,7 @@ class ProductFunction extends KeywordFunction {
     }
 }
 
-class CumproductFunction extends KeywordFunction {
-    /**
-     * 
-     */
+final class CumproductFunction extends KeywordFunction {
     private static final long serialVersionUID = -6772092265237505172L;
 
     CumproductFunction() {
@@ -926,10 +947,7 @@ class CumproductFunction extends KeywordFunction {
     }
 }
 
-class AlltrueFunction extends KeywordFunction {
-    /**
-     * 
-     */
+final class AlltrueFunction extends KeywordFunction {
     private static final long serialVersionUID = -3910946436832357924L;
 
     AlltrueFunction() {
@@ -943,10 +961,7 @@ class AlltrueFunction extends KeywordFunction {
     }
 }
 
-class SometrueFunction extends KeywordFunction {
-    /**
-     * 
-     */
+final class SometrueFunction extends KeywordFunction {
     private static final long serialVersionUID = -5098199415954538663L;
 
     SometrueFunction() {

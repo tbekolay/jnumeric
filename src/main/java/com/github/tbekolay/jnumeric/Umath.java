@@ -15,17 +15,26 @@ import org.python.core.PyObject;
 import org.python.core.PyString;
 import org.python.core.PyType;
 
+/**
+ * 
+ */
 public class Umath extends PyObject implements ClassDictInit {
-    /**
-     * 
-     */
+
     private static final long serialVersionUID = 983522288678302348L;
 
+    /**
+     * Simple constructor. No special logic.
+     */
     public Umath() {
         super(PyType.fromClass(Umath.class));
         this.javaProxy = this;
     }
 
+    /**
+     * Sets the appropriate ufuncs in the object's __dict__.
+     * 
+     * @param dict __dict__, which we want to modify.
+     */
     public static void classDictInit(final PyObject dict) {
         dict.__setitem__("__doc__", new PyString("Universal math functions."));
 
@@ -80,71 +89,195 @@ public class Umath extends PyObject implements ClassDictInit {
         dict.__setitem__("bitwise_xor", Umath.bitwise_xor);
     }
 
-    // umath functions
-
+    /**
+     * @see BinaryUfunc#add
+     */
     static final public BinaryUfunc add = new BinaryUfunc(BinaryUfunc.add);
+    /**
+     * @see BinaryUfunc#subtract
+     */
     static final public BinaryUfunc subtract = new BinaryUfunc(
             BinaryUfunc.subtract);
+    /**
+     * @see BinaryUfunc#multiply
+     */
     static final public BinaryUfunc multiply = new BinaryUfunc(
             BinaryUfunc.multiply);
+    /**
+     * @see BinaryUfunc#divide
+     */
     static final public BinaryUfunc divide = new BinaryUfunc(BinaryUfunc.divide);
+    /**
+     * @see BinaryUfunc#remainder
+     */
     static final public BinaryUfunc remainder = new BinaryUfunc(
             BinaryUfunc.remainder);
+    /**
+     * @see BinaryUfunc#power
+     */
     static final public BinaryUfunc power = new BinaryUfunc(BinaryUfunc.power);
 
+    /**
+     * @see UnaryUfunc#arccos
+     */
     static final public UnaryUfunc arccos = new UnaryUfunc(UnaryUfunc.arccos);
+    /**
+     * @see UnaryUfunc#arccosh
+     */
     static final public UnaryUfunc arccosh = new UnaryUfunc(UnaryUfunc.arccosh);
+    /**
+     * @see UnaryUfunc#arcsin
+     */
     static final public UnaryUfunc arcsin = new UnaryUfunc(UnaryUfunc.arcsin);
+    /**
+     * @see UnaryUfunc#arcsinh
+     */
     static final public UnaryUfunc arcsinh = new UnaryUfunc(UnaryUfunc.arcsinh);
+    /**
+     * @see UnaryUfunc#arctan
+     */
     static final public UnaryUfunc arctan = new UnaryUfunc(UnaryUfunc.arctan);
+    /**
+     * @see UnaryUfunc#arctanh
+     */
     static final public UnaryUfunc arctanh = new UnaryUfunc(UnaryUfunc.arctanh);
+    /**
+     * @see UnaryUfunc#ceil
+     */
     static final public UnaryUfunc ceil = new UnaryUfunc(UnaryUfunc.ceil);
+    /**
+     * @see UnaryUfunc#conjugate
+     */
     static final public UnaryUfunc conjugate = new UnaryUfunc(
             UnaryUfunc.conjugate);
+    /**
+     * @see UnaryUfunc#imaginary
+     */
     static final public UnaryUfunc imaginary = new UnaryUfunc(
             UnaryUfunc.imaginary);
+    /**
+     * @see UnaryUfunc#cos
+     */
     static final public UnaryUfunc cos = new UnaryUfunc(UnaryUfunc.cos);
+    /**
+     * @see UnaryUfunc#cosh
+     */
     static final public UnaryUfunc cosh = new UnaryUfunc(UnaryUfunc.cosh);
+    /**
+     * @see UnaryUfunc#exp
+     */
     static final public UnaryUfunc exp = new UnaryUfunc(UnaryUfunc.exp);
+    /**
+     * @see UnaryUfunc#floor
+     */
     static final public UnaryUfunc floor = new UnaryUfunc(UnaryUfunc.floor);
+    /**
+     * @see UnaryUfunc#log
+     */
     static final public UnaryUfunc log = new UnaryUfunc(UnaryUfunc.log);
+    /**
+     * @see UnaryUfunc#log10
+     */
     static final public UnaryUfunc log10 = new UnaryUfunc(UnaryUfunc.log10);
+    /**
+     * @see UnaryUfunc#real
+     */
     static final public UnaryUfunc real = new UnaryUfunc(UnaryUfunc.real);
+    /**
+     * @see UnaryUfunc#sin
+     */
     static final public UnaryUfunc sin = new UnaryUfunc(UnaryUfunc.sin);
+    /**
+     * @see UnaryUfunc#sinh
+     */
     static final public UnaryUfunc sinh = new UnaryUfunc(UnaryUfunc.sinh);
+    /**
+     * @see UnaryUfunc#sqrt
+     */
     static final public UnaryUfunc sqrt = new UnaryUfunc(UnaryUfunc.sqrt);
+    /**
+     * @see UnaryUfunc#tan
+     */
     static final public UnaryUfunc tan = new UnaryUfunc(UnaryUfunc.tan);
+    /**
+     * @see UnaryUfunc#tanh
+     */
     static final public UnaryUfunc tanh = new UnaryUfunc(UnaryUfunc.tanh);
 
+    /**
+     * @see BinaryUfunc#maximum
+     */
     static final public BinaryUfunc maximum = new BinaryUfunc(
             BinaryUfunc.maximum);
+    /**
+     * @see BinaryUfunc#minimum
+     */
     static final public BinaryUfunc minimum = new BinaryUfunc(
             BinaryUfunc.minimum);
 
+    /**
+     * @see BinaryUfunc#equal
+     */
     static final public BinaryUfunc equal = new BinaryUfunc(BinaryUfunc.equal);
+    /**
+     * @see BinaryUfunc#notEqual
+     */
     static final public BinaryUfunc not_equal = new BinaryUfunc(
             BinaryUfunc.notEqual);
+    /**
+     * @see BinaryUfunc#less
+     */
     static final public BinaryUfunc less = new BinaryUfunc(BinaryUfunc.less);
+    /**
+     * @see BinaryUfunc#lessEqual
+     */
     static final public BinaryUfunc less_equal = new BinaryUfunc(
             BinaryUfunc.lessEqual);
+    /**
+     * @see BinaryUfunc#greater
+     */
     static final public BinaryUfunc greater = new BinaryUfunc(
             BinaryUfunc.greater);
+    /**
+     * @see BinaryUfunc#greaterEqual
+     */
     static final public BinaryUfunc greater_equal = new BinaryUfunc(
             BinaryUfunc.greaterEqual);
 
+    /**
+     * @see BinaryUfunc#logicalAnd
+     */
     static final public BinaryUfunc logical_and = new BinaryUfunc(
             BinaryUfunc.logicalAnd);
+    /**
+     * @see BinaryUfunc#logicalOr
+     */
     static final public BinaryUfunc logical_or = new BinaryUfunc(
             BinaryUfunc.logicalOr);
+    /**
+     * @see BinaryUfunc#logicalXor
+     */
     static final public BinaryUfunc logical_xor = new BinaryUfunc(
             BinaryUfunc.logicalXor);
+    /**
+     * @see UnaryUfunc#logicalNot
+     */
     static final public UnaryUfunc logical_not = new UnaryUfunc(
             UnaryUfunc.logicalNot);
 
+    /**
+     * @see BinaryUfunc#bitwiseAnd
+     */
     static final public BinaryUfunc bitwise_and = new BinaryUfunc(
             BinaryUfunc.bitwiseAnd);
+    /**
+     * @see BinaryUfunc#bitwiseOr
+     */
     static final public BinaryUfunc bitwise_or = new BinaryUfunc(
             BinaryUfunc.bitwiseOr);
+    /**
+     * @see BinaryUfunc#bitwiseXor
+     */
     static final public BinaryUfunc bitwise_xor = new BinaryUfunc(
             BinaryUfunc.bitwiseXor);
 }
