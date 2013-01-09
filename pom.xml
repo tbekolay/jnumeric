@@ -9,7 +9,7 @@
 
   <groupId>com.github.tbekolay.jnumeric</groupId>
   <artifactId>jnumeric</artifactId>
-  <version>0.1</version>
+  <version>0.2-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>JNumeric</name>
@@ -28,7 +28,7 @@
     <url>git@github.com:tbekolay/jnumeric.git</url>
     <connection>scm:git:git@github.com:tbekolay/jnumeric.git</connection>
     <developerConnection>scm:git:git@github.com:tbekolay/jnumeric.git</developerConnection>
-    <tag>jnumeric-0.1</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <issueManagement>
