@@ -1,6 +1,6 @@
-
-from com.github.jnumeric.JNumeric import *
+from com.github.tbekolay.jnumeric.JNumeric import *
 import unittest
+
 
 class Sort_Test(unittest.TestCase):
     len = 8
@@ -38,7 +38,9 @@ class Sort_Test(unittest.TestCase):
         middle_index = len(self.a) / 2
         middle_element = self.a[middle_index]
         self.assertEqual(searchsorted(self.a, middle_element), middle_index)
-    
+
+
 if __name__ == "__main__":
-    unittest.main()
+    suite = unittest.TestLoader().loadTestsFromTestCase(Sort_Test)
+    unittest.TextTestRunner(verbosity=2).run(suite)
 

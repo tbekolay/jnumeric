@@ -1,12 +1,14 @@
-
-from com.github.jnumeric.JNumeric import *
-from FFT import *
+from com.github.tbekolay.jnumeric.JNumeric import *
+from com.github.tbekolay.jnumeric.FFT import *
 import unittest
+
 
 def cross_correlateByHand(a, b, mode=0):
     """Return cross-correlation of two vectors, a and b.
     Use FFT for efficiency. Format of result determined by value of 'mode'.
-    This is a testbed to implement this function in JNumeric."""
+    This is a testbed to implement this function in JNumeric.
+    
+    """
     max_len = 2 * max(len(a), len(b))
     aa = zeros(2 * len(a)).astype(Float)
     aa[:len(a)] = a[:]
@@ -32,6 +34,7 @@ def cross_correlateByHand(a, b, mode=0):
         len2 = len(result) / 2
         final = concatenate((result[len2 + 1:], result[:len2]))
     return final
+
 
 class CC_Test(unittest.TestCase):
     len = 8
@@ -84,5 +87,5 @@ class CC_Test(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main()
-
+    suite = unittest.TestLoader().loadTestsFromTestCase(CC_Test)
+    unittest.TextTestRunner(verbosity=2).run(suite)

@@ -1,8 +1,6 @@
-
-from com.github.jnumeric.JNumeric import *
+from com.github.tbekolay.jnumeric.JNumeric import *
 import unittest
 import java.lang.Math
-#from whrandom import *
 
 
 class Math_Test(unittest.TestCase):
@@ -47,4 +45,5 @@ class Math_Test(unittest.TestCase):
         
 
 if __name__ == "__main__":
-    unittest.main()
+    suite = unittest.TestLoader().loadTestsFromTestCase(Math_Test)
+    unittest.TextTestRunner(verbosity=2).run(suite)

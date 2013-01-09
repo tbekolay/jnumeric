@@ -8,6 +8,7 @@ import os
 import string
 from string import *
 import sys
+#import unittest
 
 from os.path import exists, join, abspath
 from os import pathsep
@@ -54,7 +55,12 @@ if all_files == None:
     sys.exit(0)
 
 for file in all_files:
-    if file == this_script or not file.endswith('.py'): continue
+    if file == this_script or not file.endswith('.py') or file == '__init__.py':
+        continue
+    if verbose:
+        print "Running " + file
+    execfile(file)
+    """
     module = os.path.splitext(file)[0]
     if verbose: print "Running " + module
     try:
@@ -62,3 +68,4 @@ for file in all_files:
     except Exception, e:
         print "Exception while running " + module + ":"
         print e
+    """

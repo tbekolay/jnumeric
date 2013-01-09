@@ -1,10 +1,9 @@
-
-# This file is intended to test functions used to build arrays from existing arrays.
-
-from com.github.jnumeric.JNumeric import *
+from com.github.tbekolay.jnumeric.JNumeric import *
 import unittest
 
+
 class Build_Test(unittest.TestCase):
+    """Test functions used to build arrays from existing arrays."""
     len = 8
     a = None
     
@@ -47,15 +46,7 @@ class Build_Test(unittest.TestCase):
     def test_repeat(self):
         """Does repeat() work correctly?"""
 
-
     
 if __name__ == "__main__":
-    unittest.main()
-
-
-
-
-
-
-
-
+    suite = unittest.TestLoader().loadTestsFromTestCase(Build_Test)
+    unittest.TextTestRunner(verbosity=2).run(suite)

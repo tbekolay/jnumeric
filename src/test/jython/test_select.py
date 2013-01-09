@@ -1,11 +1,13 @@
-
-from com.github.jnumeric.JNumeric import *
+from com.github.tbekolay.jnumeric.JNumeric import *
 import unittest
 
-# This suite tests functions that didn't fit into any of the other categories.
-# Feel free to re-assign them if it makes more sense.
 
 class Select_Test(unittest.TestCase):
+    """This suite tests functions that didn't fit into any of the other categories.
+    Feel free to re-assign them if it makes more sense.
+    
+    """
+    
     len = 8
     a = None
     
@@ -59,17 +61,7 @@ class Select_Test(unittest.TestCase):
         else:
             self.fail("JNumeric doesn't handle symbolic relationships well in where().\n*** You may have fixed this problem. ***")
 
-            
-
-
 
 if __name__ == "__main__":
-    unittest.main()
-
-
-
-
-
-
-
-
+    suite = unittest.TestLoader().loadTestsFromTestCase(Select_Test)
+    unittest.TextTestRunner(verbosity=2).run(suite)

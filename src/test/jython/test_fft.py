@@ -1,23 +1,25 @@
-
-from com.github.jnumeric.JNumeric import *
+from com.github.tbekolay.jnumeric.JNumeric import *
 import unittest
 
-# Fast Fourier Transform module.
-# Test basic cases:
-# -  constant <--> delta function
-# -  delta function <--> constant
-# -  transform(inverse transform) = identity
-# Test fancy things:
-# -  correlation(A, B) should equal inverse_fft(product(fft(A), conjugate(fft(B))))
-# -  correlation the slow way, should equal the built-in function
-# Test weird things:
-# -  anything that doesn't fall into the above categories.
-
-
-# Names of test cases must start with string 'test' for this framework
-# to work properly as it stands now. Not my idea, that's how it's set up.
 
 class FFT_Test(unittest.TestCase):
+    """Fast Fourier Transform module.
+    Test basic cases:
+     -  constant <--> delta function
+     -  delta function <--> constant
+     -  transform(inverse transform) = identity
+    Test fancy things:
+     -  correlation(A, B) should equal inverse_fft(product(fft(A), conjugate(fft(B))))
+     -  correlation the slow way, should equal the built-in function
+    Test weird things:
+     -  anything that doesn't fall into the above categories.
+
+    Names of test cases must start with string 'test' for this framework
+    to work properly as it stands now. Not my idea, that's how it's set up.
+
+    """
+    
+    
     len = 8
     a = None
     
@@ -46,5 +48,6 @@ class FFT_Test(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main()
+    suite = unittest.TestLoader().loadTestsFromTestCase(FFT_Test)
+    unittest.TextTestRunner(verbosity=2).run(suite)
 

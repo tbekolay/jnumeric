@@ -1,12 +1,14 @@
-from com.github.jnumeric.JNumeric import *
+from com.github.tbekolay.jnumeric.JNumeric import *
 import unittest
 
-# The tests in this case are for functions which are really just
-# abbreviations for combinations of other more elemental
-# functions. Thus, alltrue is an abbreviation for 'reduce applied to
-# logical and'.
-
 class Abbrev_Test(unittest.TestCase):
+    """The tests in this case are for functions which are really just
+    abbreviations for combinations of other more elemental
+    functions. Thus, alltrue is an abbreviation for 'reduce applied to
+    logical and'.
+    
+    """
+    
     len = 8
     a = None
     false = 0
@@ -15,11 +17,11 @@ class Abbrev_Test(unittest.TestCase):
     def setUp(self):
         """Hook function, called by all other tests, before running themselves."""
         self.len = 8
-        self.a = np.arange(1, 10)
-        self.A = np.arange(50)
+        self.a = arange(1, 10)
+        self.A = arange(50)
         self.Nrows, self.Ncols = 5, 10
-        self.B = np.reshape(self.A, (self.Nrows, self.Ncols))
-        self.mysum = np.zeros(self.Ncols)
+        self.B = reshape(self.A, (self.Nrows, self.Ncols))
+        self.mysum = zeros(self.Ncols)
 
     def tearDown(self):
         """
@@ -85,12 +87,5 @@ class Abbrev_Test(unittest.TestCase):
             fail("expected an exception for allclose()")
     
 if __name__ == "__main__":
-    unittest.main()
-
-
-
-
-
-
-
-
+    suite = unittest.TestLoader().loadTestsFromTestCase(Abbrev_Test)
+    unittest.TextTestRunner(verbosity=2).run(suite)

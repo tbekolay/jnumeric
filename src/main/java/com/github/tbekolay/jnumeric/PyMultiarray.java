@@ -618,7 +618,10 @@ public class PyMultiarray extends PySequence {
         }
     }
 
-    /** Return a multiarray with data byte swapped (little to big endian). */
+    /**
+     * Return a multiarray with data byte swapped (little to big endian). 
+     * @return The byte swapped multiarray
+     */
     public final PyMultiarray byteswapped() {
         // This assumes typesize is even or 1 (it better be!).
         final PyMultiarray result = PyMultiarray.array(this);
@@ -639,12 +642,18 @@ public class PyMultiarray extends PySequence {
         return result;
     }
 
-    /** Return a copy . */
+    /**
+     * Return a copy. 
+     * @return Multiarray copy
+     */
     public final PyMultiarray copy() {
         return PyMultiarray.array(this);
     }
 
-    /** Return multiarray as a Python list. */
+    /**
+     * Return multiarray as a Python list. 
+     * @return Python list with the same data as the multiarray
+     */
     public final PyList tolist() {
         if (this.dimensions.length == 0) { throw Py
                 .ValueError("Can't convert a 0d array to a list"); }
@@ -668,6 +677,10 @@ public class PyMultiarray extends PySequence {
     /**
      * Return a reshaped multiarray (shares data with <code>a</code> if it is
      * contiguous).
+     * @param o Input array
+     * @param shape A tuple or list describing the dimensionality of the array
+     *   (e.g., (10,) for a 10-element vector, [2, 5] for a 2 by 5 matrix))
+     * @return The reshaped multiarray
      */
     public static PyMultiarray reshape(final PyObject o, int[] shape) {
         final PyMultiarray a = PyMultiarray.ascontiguous(o);
@@ -683,6 +696,10 @@ public class PyMultiarray extends PySequence {
     /**
      * Return a new array with the specified shape. The original array can have
      * any total size.
+     * @param o Input array
+     * @param shape A tuple or list describing the dimensionality of the array
+     *   (e.g., (10,) for a 10-element vector, [2, 5] for a 2 by 5 matrix))
+     * @return The resized multiarray
      */
     public static PyMultiarray resize(final PyObject o, final int[] shape) {
         final PyMultiarray a = PyMultiarray.ascontiguous(PyMultiarray.reshape(
@@ -702,7 +719,12 @@ public class PyMultiarray extends PySequence {
         return result;
     }
 
-    /** Return a new, sorted array. */
+    /**
+     * Return a new, sorted array. 
+     * @param o Array to be sorted
+     * @param axis Axis over which to sort
+     * @return A new, sorted array
+     */
     public static PyMultiarray sort(final PyObject o, final int axis) {
         final PyMultiarray a = PyMultiarray.array(PyMultiarray.swapAxes(
                 PyMultiarray.asarray(o),
@@ -736,7 +758,12 @@ public class PyMultiarray extends PySequence {
         return PyMultiarray.swapAxes(a, axis, -1);
     }
 
-    /** See Numeric documentation. */
+    /**
+     * Returns the indices that would sort an array. 
+     * @param o Input array
+     * @param axis Axis over which to sort
+     * @return The indices that would sort the array.
+     */
     public static PyMultiarray argSort(final PyObject o, final int axis) {
         // We depend on 'a' being 'vanilla' below.
         // There's a probable extra copy here though.
@@ -760,17 +787,15 @@ public class PyMultiarray extends PySequence {
             ia[j] = new IndexedArray();
         }
         // Create a comparator that sorts an IndexArray
-        final Comparator comp = new Comparator() {
-            public int compare(final Object o1, final Object o2) {
-                final IndexedArray ia1 = (IndexedArray) o1;
-                final IndexedArray ia2 = (IndexedArray) o2;
-                if (ia1.item.equals(ia2.item)) {
-                return 0;
+        final Comparator<IndexedArray> comp = new Comparator<IndexedArray>() {
+            public int compare(final IndexedArray o1, final IndexedArray o2) {
+                if (o1.item.equals(o2.item)) {
+                	return 0;
                 }
-                final double d1 = ia1.item.doubleValue();
-                final double d2 = ia2.item.doubleValue();
+                final double d1 = o1.item.doubleValue();
+                final double d2 = o2.item.doubleValue();
                 if (d1 > d2) {
-                return 1;
+                	return 1;
                 }
                 return -1;
             }
@@ -796,6 +821,9 @@ public class PyMultiarray extends PySequence {
     /**
      * Return a multiarray with the axes transposed according to
      * <code>perms</code> (shares data with <code>a</code>).
+     * @param o Input array
+     * @param perms Axes to transpose
+     * @return The transposed multiarray
      */
     public static PyMultiarray transpose(final PyObject o, final int[] perms) {
         final PyMultiarray a = PyMultiarray.asarray(o);
@@ -803,8 +831,9 @@ public class PyMultiarray extends PySequence {
         for (int i = 0; i < perms.length; i++) {
             int axis = perms[i];
             axis = (axis < 0) ? a.dimensions.length + axis : axis;
-            if (axis < 0 || axis >= a.dimensions.length || used[axis]) { throw Py
-                    .ValueError("illegal permutation"); }
+            if (axis < 0 || axis >= a.dimensions.length || used[axis]) {
+            	throw Py.ValueError("illegal permutation");
+            }
             perms[i] = axis;
             used[axis] = true;
         }
@@ -822,8 +851,14 @@ public class PyMultiarray extends PySequence {
         return ans;
     }
 
-    // See David Ascher's Numeric Python documentation for what these do.
-    /** Same as David Ascher's Numeric Python function. */
+    /**
+     * Repeat elements of an array.
+     * @param oA Input array
+     * @param oRepeats The number of repetitions for each element.
+     * @param axis The axis along which to repeat values.
+     * @return Output array which has the same shape as a,
+     *  except along the given axis.
+     */
     public static PyMultiarray repeat(final PyObject oA, final PyObject oRepeats, int axis) {
         PyMultiarray a = PyMultiarray.asarray(oA), repeats = PyMultiarray
                 .asarray(oRepeats);
@@ -855,7 +890,13 @@ public class PyMultiarray extends PySequence {
         return PyMultiarray.swapAxes(result, 0, axis);
     }
 
-    /** Same as David Ascher's Numeric Python function. */
+    /**
+     * Take elements from an array along an axis.
+     * @param oA The source array.
+     * @param oIndices The indices of the values to extract.
+     * @param axis The axis over which to select values.
+     * @return The returned array has the same type as oA.
+     */
     public static PyMultiarray take(final PyObject oA, final PyObject oIndices, int axis) {
         PyMultiarray a = PyMultiarray.asarray(oA), indices = PyMultiarray
                 .asarray(oIndices);
@@ -890,10 +931,15 @@ public class PyMultiarray extends PySequence {
     }
 
     /**
-     * Same as David Ascher's Numeric Python function.
      * Implements <code>choose()/clip()/where()</code> functionality.
      * Choose elements from object <code>oA</code> based on set of indices
      * <code>b</code>.
+     * @param oA This array must contain integers in [0, n-1], where n is
+     * the number of choices, unless mode=wrap or mode=clip,
+     * in which cases any integers are permissible.
+     * @param b Choice arrays. a and all of the choices must be broadcastable
+     * to the same shape.
+     * @return The merged result.
      */
     public static PyMultiarray choose(final PyObject oA, final PyObject b) {
         PyMultiarray a = PyMultiarray.array(oA);
@@ -942,7 +988,14 @@ public class PyMultiarray extends PySequence {
         return result;
     }
 
-    /** Same as David Ascher's Numeric Python function. */
+    /**
+     * Join a sequence of arrays together.
+     * @param po sequence of array_like. 
+     * The arrays must have the same shape, except in the dimension
+     * corresponding to axis (the first, by default).
+     * @param axis The axis along which the arrays will be joined. Default: 0.
+     * @return The concatenated array.
+     */
     public static PyMultiarray concatenate(final PyObject po, int axis) {
         if (po.__len__() == 0) { return PyMultiarray.zeros(new int[] {}, 'i'); }
         // Check axis and rotate the axis to zero.
@@ -950,8 +1003,9 @@ public class PyMultiarray extends PySequence {
         if (axis < 0) {
             axis += proto.dimensions.length;
         }
-        if (axis < 0 || axis >= proto.dimensions.length) { throw Py
-                .ValueError("illegal axis"); }
+        if (axis < 0 || axis >= proto.dimensions.length) {
+        	throw Py.ValueError("illegal axis");
+        }
         // Make array of multiarrays.
         final PyMultiarray[] as = new PyMultiarray[po.__len__()];
         as[0] = proto = PyMultiarray.rotateAxes(proto, -axis);
@@ -962,11 +1016,13 @@ public class PyMultiarray extends PySequence {
                     PyMultiarray.asarray(po.__getitem__(i)),
                     -axis);
             type = PyMultiarray.commonType(type, as[i]._typecode);
-            if (as[i].dimensions.length != proto.dimensions.length) { throw Py
-                    .ValueError("mismatched array dimensions"); }
+            if (as[i].dimensions.length != proto.dimensions.length) {
+            	throw Py.ValueError("mismatched array dimensions");
+            }
             for (int j = 1; j < proto.dimensions.length; j++) {
-                if (as[i].dimensions[j] != proto.dimensions[j]) { throw Py
-                        .ValueError("mismatched array dimensions"); }
+                if (as[i].dimensions[j] != proto.dimensions[j]) {
+                	throw Py.ValueError("mismatched array dimensions");
+                }
             }
             dimensions[0] += as[i].dimensions[0];
         }
@@ -988,10 +1044,15 @@ public class PyMultiarray extends PySequence {
      * of the original, such that the difference between their indices
      * along the specified axes is equal to the specified offset. This
      * means it can operate on non-square matrices too.
+     * @param o Array from which the diagonals are taken.
+     * @param offset Offset of the diagonal from the main diagonal.
+     * Can be positive or negative.
+     * @param axis Axis from which the diagonals should be taken.
+     * @return A 1-D array containing the diagonal.
      */
-    // XXX This is a direct translation from Python -- need to figure it out.
+    // TODO This is a direct translation from Python -- need to figure it out.
     public static PyMultiarray diagonal(final PyObject o, int offset, final int axis) {
-        // XXX Check arguments.
+        // TODO Check arguments.
         // Leave debugging statements here, but turned off, until thoroughly
         // tested.
         final boolean debug_this = false;
@@ -1076,15 +1137,23 @@ public class PyMultiarray extends PySequence {
         return PyMultiarray.rotateAxes(a, 2 + axis);
     }
 
-    // XXX check again!
-    /** Same as David Ascher's Numeric Python function. */
+    // TODO check again!
+    /**
+     * Inner product of two arrays.
+     * @param oA First input array
+     * @param oB Second input array
+     * @param axisA Axis for the first array
+     * @param axisB Axis for the second array
+     * @return Inner product of the two arrays.
+     */
     public static PyObject innerProduct(final PyObject oA, final PyObject oB, int axisA, int axisB) {
         PyMultiarray a = PyMultiarray.ascontiguous(oA), b = PyMultiarray
                 .ascontiguous(oB);
         // Check arguments
         // This next line emulates CNumeric behaviour that I'm not sure I like.
-        if (a.dimensions.length == 0 || b.dimensions.length == 0) { return a
-                .__mul__(b); }
+        if (a.dimensions.length == 0 || b.dimensions.length == 0) {
+        	return a.__mul__(b);
+        }
         final char type = PyMultiarray.commonType(a._typecode, b._typecode);
         if (axisA < 0) {
             axisA += a.dimensions.length;
@@ -1136,6 +1205,9 @@ public class PyMultiarray extends PySequence {
     /**
      * Return an array of indices of where the items would be locatated in the
      * given array.
+     * @param o Input array, sorted in ascending order
+     * @param v Values to insert into o
+     * @return Array of insertion points with the same shape as v
      */
     public static PyObject searchSorted(final PyObject o, final PyObject v) {
         final PyMultiarray a = PyMultiarray.ascontiguous(o);
@@ -1190,7 +1262,22 @@ public class PyMultiarray extends PySequence {
         return result;
     }
 
-    /** Return convolution of two vectors. */
+    /**
+     * Return convolution of two vectors.
+     * @param oA0 First vector
+     * @param oB0 Second vector
+     * @param mode Convolution mode, as an integer.
+     *   0 = 'valid'; This returns output of length max(M, N) - min(M, N) + 1.
+     *     The convolution product is only given for points where the signals
+     *     overlap completely. Values outside the signal boundary have no effect.
+	 *   1 = 'same'; This returns output of length max(M, N).
+	 *     Boundary effects are still visible.
+     *   2 = 'full'; This returns the convolution at each point of overlap,
+     *     with an output shape of (N+M-1,). At the end-points of the
+     *     convolution, the signals do not overlap completely, and boundary
+     *     effects may be seen.
+     * @return Discrete, linear convolution of oA0 and oB0
+     */
     public static PyMultiarray convolve(final PyObject oA0, final PyObject oB0, final int mode) {
         PyMultiarray a0 = PyMultiarray.asarray(oA0), b0 = PyMultiarray
                 .asarray(oB0);
@@ -1230,7 +1317,7 @@ public class PyMultiarray extends PySequence {
             padl = n - 1;
             break;
         default:
-            throw Py.ValueError("mode must be 0,1, or 2");
+            throw Py.ValueError("mode must be 0, 1, or 2");
         }
         // Create the result.
         final PyMultiarray result = PyMultiarray.zeros(
@@ -1254,6 +1341,8 @@ public class PyMultiarray extends PySequence {
     /**
      * Compute the padded length of a vector prior to using FFT.
      * This is a helper routine for cross_correlate()
+     * @param length Length of original vector
+     * @return Length of padded vector
      */
     public static int XC_padded_length(final int length) {
         // Length of padding for FFT.
@@ -1266,13 +1355,16 @@ public class PyMultiarray extends PySequence {
     /**
      * Perform padding on vector, prior to using FFT.
      * This is a helper routine for cross_correlate()
+     * @param V Input vector
+     * @param padl Length to pad to
+     * @return Padded vector
      */
     public static PyMultiarray XC_pad_vector(final PyMultiarray V, final int padl) {
         final char type = V.typecode();
         final PyMultiarray V_pad = PyMultiarray.zeros(new int[] { padl }, type);
         final int V_dim = V.dimensions[0];
         final int Lv2 = V_dim / 2;
-        final boolean debug_this = false;
+        // final boolean debug_this = false;
 
         if (V_dim % 2 == 0) {
             V_pad.setslice(0, Lv2, 1, V.getslice(Lv2, V_dim, 1));
@@ -1288,6 +1380,11 @@ public class PyMultiarray extends PySequence {
     /**
      * Recover the result of an FFT-based correlation.
      * This is a helper routine for cross_correlate()
+     * @param R Input vector
+     * @param lenA Dimensions of A
+     * @param lenB Dimensions of B
+     * @param mode Correlation mode; see PyMulitarray.convolve
+     * @return Unpadded vector
      */
     public static PyMultiarray XC_unpad_vector(final PyMultiarray R, int lenA, int lenB, final int mode) {
         final boolean debug_this = false;
@@ -1388,6 +1485,10 @@ public class PyMultiarray extends PySequence {
      * Cross-correlation is performed in Fourier space, since the
      * computational complexity is Nlog(N), compared to N^2 in real space,
      * (N=length of vectors),
+     * @param oA0 First vector
+     * @param oB0 Second vector
+     * @param mode Convolution mode; see PyMultiarray.convolve
+     * @return Cross-correlation of the two vectors
      */
     public static PyMultiarray cross_correlate(final PyObject oA0, final PyObject oB0, final int mode) {
         final boolean debug_this = false;
@@ -1529,7 +1630,11 @@ public class PyMultiarray extends PySequence {
         return null;
     }
 
-    /** Return the shape of a Python sequence. */
+    /**
+	 * Return the shape of a Python sequence. 
+     * @param seq Array-like
+     * @return The shape of <code>seq</code>
+     */
     public final static int[] shapeOf(final PyObject seq) {
         if (seq instanceof PyMultiarray) { return ((PyMultiarray) seq).dimensions
                 .clone(); }
@@ -1565,7 +1670,9 @@ public class PyMultiarray extends PySequence {
         return shape;
     }
 
-    /** Return a multiarray with the axes rotated by n (axis 0->n, 1->n+1, etc.) */
+    /**
+     * Return a multiarray with the axes rotated by n (axis 0->n, 1->n+1, etc.)
+     */
     static PyMultiarray rotateAxes(final PyMultiarray a, int n) {
         final PyMultiarray result = new PyMultiarray(
                 a.data,
@@ -1584,7 +1691,9 @@ public class PyMultiarray extends PySequence {
         return result;
     }
 
-    /** Return a multiarray with the axess n0 and n1 swapped. */
+    /**
+     * Return a multiarray with the axess n0 and n1 swapped.
+     */
     static PyMultiarray swapAxes(final PyMultiarray a, int n0, int n1) {
         final PyMultiarray result = new PyMultiarray(
                 a.data,
@@ -1639,7 +1748,9 @@ public class PyMultiarray extends PySequence {
         return PyMultiarray.kindAndNBytesToType(newtype, newsize);
     }
 
-    /** Convert a sequence to an array of ints. */
+    /**
+     * Convert a sequence to an array of ints.
+     */
     static int[] objectToInts(final Object jo, final boolean forgiving) {
         if (jo instanceof int[]) { return (int[]) jo; }
 
@@ -1733,8 +1844,8 @@ public class PyMultiarray extends PySequence {
     }
 
     /**
-     * Convert a PyObject into a native Java type based on <code>typecode</code>
-     * .
+     * Convert a PyObject into a native Java type based on
+     * <code>typecode</code>.
      * If returnReal is false, the complex part of the given object is returned,
      * this defaults to zero if the PyObject is not an instance of PyComplex.
      */
@@ -1751,7 +1862,9 @@ public class PyMultiarray extends PySequence {
         return number;
     }
 
-    /** Return the appropriate typecode for a PyObject. */
+    /**
+     * Return the appropriate typecode for a PyObject.
+     */
     private final static char objectToType(final PyObject o) {
         if (o instanceof PyInteger) {
             return 'i';
@@ -1767,7 +1880,9 @@ public class PyMultiarray extends PySequence {
         }
     }
 
-    /** Find an appropriate common type for an array of PyObjects. */
+    /**
+     * Find an appropriate common type for an array of PyObjects.
+     */
     private final static char objectsToType(final PyObject[] objects) {
         if (objects.length == 0) { return 'i'; }
         short new_no, no = -1;
@@ -1782,8 +1897,10 @@ public class PyMultiarray extends PySequence {
         return PyMultiarray.kindAndNBytesToType(no, sz);
     }
 
-    /** Return a Java Class that matches typecode. */
-    private final static Class typeToClass(final char typecode) {
+    /**
+     * Return a Java Class that matches typecode.
+     */
+    private final static Class<?> typeToClass(final char typecode) {
         switch (typecode) {
         case '1':
             return Byte.TYPE;
@@ -1806,8 +1923,10 @@ public class PyMultiarray extends PySequence {
         }
     }
 
-    /** Return a typecode that matches the given Java class */
-    private final static char classToType(final Class klass) {
+    /**
+     * Return a typecode that matches the given Java class
+     */
+    private final static char classToType(final Class<?> klass) {
         if (klass.equals(Byte.TYPE)) { return '1'; }
         if (klass.equals(Short.TYPE)) { return 's'; }
         if (klass.equals(Integer.TYPE)) { return 'i'; }
@@ -1877,7 +1996,9 @@ public class PyMultiarray extends PySequence {
         }
     }
 
-    /** Return the number of bytes per element for the given typecode. */
+    /**
+     * Return the number of bytes per element for the given typecode.
+     */
     private final static short typeToNBytes(final char typecode) {
         switch (typecode) {
         case '1':
@@ -1899,7 +2020,9 @@ public class PyMultiarray extends PySequence {
         }
     }
 
-    /** Return a typecode that matches a given type kind and size (in bytes). */
+    /**
+     * Return a typecode that matches a given type kind and size (in bytes).
+     */
     private final static char kindAndNBytesToType(final short kind, final short nbytes) {
         switch (kind) {
         case INTEGER:
@@ -2054,9 +2177,11 @@ public class PyMultiarray extends PySequence {
     // Python special methods.
     //
 
-    /** Convert <code>this</code> to a java object of Class <code>c</code>. */
-    @Override public Object __tojava__(final Class c) {
-        final Class type = PyMultiarray.typeToClass(this._typecode);
+    /**
+     * Convert <code>this</code> to a java object of Class <code>c</code>.
+     */
+    @Override public Object __tojava__(final Class<?> c) {
+        final Class<?> type = PyMultiarray.typeToClass(this._typecode);
         if (this.dimensions.length == 0 || this._typecode == 'F'
                 || this._typecode == 'D') { return super.__tojava__(c); // Punt!
         }
@@ -2085,19 +2210,25 @@ public class PyMultiarray extends PySequence {
         return super.__tojava__(c);
     }
 
-    /** Return the length of the array (along the first axis). */
+    /**
+     * Return the length of the array (along the first axis).
+     */
     @Override public int __len__() {
         if (this.dimensions.length == 0) { throw Py
                 .ValueError("__len__ of zero dimensional array"); }
         return this.dimensions[0];
     }
 
-    /** Overide PyObject method so that get is invoked instead of __finditem__. */
+    /**
+     * Override PyObject method so that get is invoked instead of __finditem__.
+     */
     @Override public PyObject __getitem__(final int index) {
         return this.get(index);
     }
 
-    /** Disable comparison of Multiarrays/ */
+    /**
+     * Disable comparison of Multiarrays
+     */
     @Override public int __cmp__(final PyObject other) {
         final boolean debug_this = false;
         if (!(other instanceof PyMultiarray)) { return -2; }
@@ -2112,12 +2243,16 @@ public class PyMultiarray extends PySequence {
         throw Py.TypeError("Comparison of multiarray objects is not implemented.");
     }
 
-    /** Return the subarray or item indicated by indices. */
+    /**
+     * Return the subarray or item indicated by indices.
+     */
     @Override public PyObject __getitem__(final PyObject indices) {
         return PyMultiarray.returnValue(this.indicesToStructure(indices));
     }
 
-    /** Set the subarray based on indices to PyValue. */
+    /**
+     * Set the subarray based on indices to PyValue.
+     */
     @Override public void __setitem__(final PyObject indices, final PyObject pyValue) {
         // Get the shape of the subarray to set.
         final PyMultiarray toStructure = this.indicesToStructure(indices);
@@ -2144,7 +2279,7 @@ public class PyMultiarray extends PySequence {
         PyMultiarray.copyAToB(value, toStructure);
     }
 
-    // XXX Optimize!!
+    // TODO Optimize!!
     /**
      * Set a slice of a PyObject.
      * Changes elements from <code>start</code> up to,
@@ -2159,7 +2294,7 @@ public class PyMultiarray extends PySequence {
                 value);
     }
 
-    // XXX Optimize!!
+    // TODO Optimize!!
     /**
      * Return a slice of a PyObject.
      * Gets elements from <code>start</code> up to,
@@ -2173,7 +2308,9 @@ public class PyMultiarray extends PySequence {
                 .newInteger(step)));
     }
 
-    /** Return the repr for this Multiarray. */
+    /**
+     * Return the repr for this Multiarray.
+     */
     @Override public PyString __repr__() {
         return Py.newString(PyMultiarrayPrinter.array2string(
                 this,
@@ -2184,7 +2321,9 @@ public class PyMultiarray extends PySequence {
                 true));
     }
 
-    /** Return the str for this Multiarray. */
+    /**
+     * Return the str for this Multiarray.
+     */
     @Override public PyString __str__() {
         return Py.newString(PyMultiarrayPrinter.array2string(
                 this,
@@ -2195,7 +2334,9 @@ public class PyMultiarray extends PySequence {
                 false));
     }
 
-    /** Multiarray attributes are found using <code>__findattr__</code>. */
+    /**
+     * Multiarray attributes are found using <code>__findattr__</code>.
+     */
     @Override public PyObject __findattr_ex__(final String name) {
         // if (name == "__class__") return __class__;
         if (name == "__doc__") { return Py.newString(this.docString); }
@@ -2214,7 +2355,9 @@ public class PyMultiarray extends PySequence {
         return super.__findattr_ex__(name);
     }
 
-    /** Multiarray attributes are set using <code>__setattr__</code>. */
+    /**
+     * Multiarray attributes are set using <code>__setattr__</code>.
+     */
     @Override public void __setattr__(final String name, final PyObject value)
             throws PyException {
         if (name == "shape") {
@@ -2320,7 +2463,9 @@ public class PyMultiarray extends PySequence {
         }
     }
 
-    /** pulled out of PySequence */
+    /**
+     * Pulled out of PySequence
+     */
     private static final int getIndex(final PyObject index, final int defaultValue) {
         if (index == Py.None || index == null) { return defaultValue; }
         if (!(index instanceof PyInteger)) { throw Py
@@ -2328,16 +2473,19 @@ public class PyMultiarray extends PySequence {
         return ((PyInteger) index).getValue();
     }
 
-    /** from jython 2.2.1 PySequence */
+    /**
+     * From jython 2.2.1 PySequence
+     */
     protected static final int getStep1(final PyObject s_step) {
         final int step = PyMultiarray.getIndex(s_step, 1);
         if (step == 0) { throw Py.TypeError("slice step of zero not allowed"); }
         return step;
     }
 
-    /* Should go in PySequence */
-    protected static final int getStart1(final PyObject s_start, final int step, final int length)
-    {
+    /**
+     * Should go in PySequence
+     */
+    protected static final int getStart1(final PyObject s_start, final int step, final int length) {
         int start;
         if (step < 0) {
             start = PyMultiarray.getIndex(s_start, length - 1);
@@ -2365,8 +2513,7 @@ public class PyMultiarray extends PySequence {
         return start;
     }
 
-    protected static final int getStop1(final PyObject s_stop, final int start, final int step, final int length)
-    {
+    protected static final int getStop1(final PyObject s_stop, final int start, final int step, final int length) {
         int stop;
         if (step < 0) {
             stop = PyMultiarray.getIndex(s_stop, -1);
@@ -2977,7 +3124,9 @@ public class PyMultiarray extends PySequence {
         }
     }
 
-    /** This converts data (which must be an array) to an array of bytes. */
+    /**
+     * This converts data (which must be an array) to an array of bytes.
+     */
     static byte[] toByteArray(final Object data, final char type) {
         try {
             final java.io.ByteArrayOutputStream byteStream = new java.io.ByteArrayOutputStream();
@@ -5229,10 +5378,20 @@ public class PyMultiarray extends PySequence {
         }
     }
 
+    /**
+     * @param a First array
+     * @param b Second array
+     * @return Maximum values from the two arrays
+     */
     public static PyObject myMax(final PyObject a, final PyObject b) {
         return b._gt(a).__nonzero__() ? b : a;
     }
 
+    /**
+     * @param a First array
+     * @param b Second array
+     * @return Minimum values from the two arrays
+     */
     public static PyObject myMin(final PyObject a, final PyObject b) {
         return b._lt(a).__nonzero__() ? b : a;
     }
@@ -5258,6 +5417,10 @@ public class PyMultiarray extends PySequence {
         }
     }
 
+    /**
+     * @param o Input array
+     * @return Maximum value from the array
+     */
     public PyObject __max(final PyObject o) {
         return this.__max(o, null);
     }
@@ -5493,6 +5656,10 @@ public class PyMultiarray extends PySequence {
         }
     }
 
+    /**
+     * @param o Input array
+     * @return Minimum value from the array
+     */
     public PyObject __min(final PyObject o) {
         return this.__min(o, null);
     }
@@ -5724,6 +5891,10 @@ public class PyMultiarray extends PySequence {
         }
     }
 
+    /**
+     * @param o Input array
+     * @return Where the two arrays are equal
+     */
     public PyObject __eq(final PyObject o) {
         return this.__eq(o, null);
     }
@@ -5955,6 +6126,10 @@ public class PyMultiarray extends PySequence {
         }
     }
 
+    /**
+     * @param o Input array
+     * @return Where the two arrays are not equal
+     */
     public PyObject __neq(final PyObject o) {
         return this.__neq(o, null);
     }
@@ -6186,6 +6361,10 @@ public class PyMultiarray extends PySequence {
         }
     }
 
+    /**
+     * @param o Input array
+     * @return Where less than or equal
+     */
     public PyObject __le(final PyObject o) {
         return this.__le(o, null);
     }
@@ -6401,6 +6580,10 @@ public class PyMultiarray extends PySequence {
         }
     }
 
+    /**
+     * @param o Input array
+     * @return Where less than
+     */
     public PyObject __lt(final PyObject o) {
         return this.__lt(o, null);
     }
@@ -6616,6 +6799,10 @@ public class PyMultiarray extends PySequence {
         }
     }
 
+    /**
+     * @param o Input array
+     * @return Where greater than or equal
+     */
     public PyObject __ge(final PyObject o) {
         return this.__ge(o, null);
     }
@@ -6831,6 +7018,10 @@ public class PyMultiarray extends PySequence {
         }
     }
 
+    /**
+     * @param o Input array
+     * @return Where greater than
+     */
     public PyObject __gt(final PyObject o) {
         return this.__gt(o, null);
     }
@@ -7046,6 +7237,10 @@ public class PyMultiarray extends PySequence {
         }
     }
 
+    /**
+     * @param o Input array
+     * @return Logical and
+     */
     public PyObject __land(final PyObject o) {
         return this.__land(o, null);
     }
@@ -7278,6 +7473,10 @@ public class PyMultiarray extends PySequence {
         }
     }
 
+    /**
+     * @param o Input array
+     * @return Logical or
+     */
     public PyObject __lor(final PyObject o) {
         return this.__lor(o, null);
     }
@@ -7509,6 +7708,10 @@ public class PyMultiarray extends PySequence {
         }
     }
 
+    /**
+     * @param o Input array
+     * @return Logical exclusive-or
+     */
     public PyObject __lxor(final PyObject o) {
         return this.__lxor(o, null);
     }
@@ -8140,7 +8343,7 @@ public class PyMultiarray extends PySequence {
     PyMultiarray __abs__(PyMultiarray a) {
         if (!a.isContiguous) { throw Py
                 .ValueError("internal __abs__ requires contiguous matrix as argument"); }
-        final int maxI = a.start + PyMultiarray.shapeToNItems(a.dimensions);
+        // final int maxI = a.start + PyMultiarray.shapeToNItems(a.dimensions);
         switch (a._typecode) {
         case '1':
             final byte aData1[] = (byte[]) a.data;
@@ -8203,7 +8406,7 @@ public class PyMultiarray extends PySequence {
     PyMultiarray __neg__(PyMultiarray a) {
         if (!a.isContiguous) { throw Py
                 .ValueError("internal __neg__ requires contiguous matrix as argument"); }
-        final int maxI = a.start + PyMultiarray.shapeToNItems(a.dimensions);
+        // final int maxI = a.start + PyMultiarray.shapeToNItems(a.dimensions);
         switch (a._typecode) {
         case '1':
             final byte aData1[] = (byte[]) a.data;
@@ -8266,7 +8469,7 @@ public class PyMultiarray extends PySequence {
     PyMultiarray __not__(final PyMultiarray a) {
         if (!a.isContiguous) { throw Py
                 .ValueError("internal __not__ requires contiguous matrix as argument"); }
-        final int maxI = a.start + PyMultiarray.shapeToNItems(a.dimensions);
+        // final int maxI = a.start + PyMultiarray.shapeToNItems(a.dimensions);
         switch (a._typecode) {
         case '1':
             final byte aData1[] = (byte[]) a.data;

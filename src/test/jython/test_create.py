@@ -1,6 +1,6 @@
-
-from com.github.jnumeric.JNumeric import *
+from com.github.tbekolay.jnumeric.JNumeric import *
 import unittest
+
 
 class Create_Test(unittest.TestCase):
     len = 8
@@ -53,12 +53,5 @@ class Create_Test(unittest.TestCase):
 
     
 if __name__ == "__main__":
-    unittest.main()
-
-
-
-
-
-
-
-
+    suite = unittest.TestLoader().loadTestsFromTestCase(Create_Test)
+    unittest.TextTestRunner(verbosity=2).run(suite)
