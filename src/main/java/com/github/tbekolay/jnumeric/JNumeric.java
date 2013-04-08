@@ -44,17 +44,24 @@ public class JNumeric extends PyObject implements ClassDictInit {
         final Umath umath = new Umath();
         dict.__setitem__("umath", umath);
         dict.__setitem__("FFT", new FFT());
+        dict.__setitem__("random", new JNumericRandom());
+        dict.__setitem__("linalg", new LinAlg());
 
         dict.__setitem__("__doc__", Py.newString(JNumeric.__doc__));
         dict.__setitem__("__version__", Py.newString("0.2a6"));
 
         // from umath import * (more or less).
         Umath.classDictInit(dict);
+        // from random import * (more or less).
+        JNumericRandom.classDictInit(dict);
+        // from linalg import * (more or less).
+        LinAlg.classDictInit(dict);
 
         // constants
 
         dict.__setitem__("pi", Py.newFloat(java.lang.Math.PI));
         dict.__setitem__("e", Py.newFloat(java.lang.Math.E));
+        dict.__setitem__("inf", Py.newFloat(Double.POSITIVE_INFINITY));
 
         dict.__setitem__("Int8", Py.newString("1"));
         dict.__setitem__("Int16", Py.newString("s"));
@@ -108,6 +115,7 @@ public class JNumeric extends PyObject implements ClassDictInit {
         dict.__setitem__("identity", JNumeric.identity);
         dict.__setitem__("indices", JNumeric.indices);
         dict.__setitem__("innerproduct", JNumeric.innerproduct);
+        dict.__setitem__("linspace", JNumeric.linspace);
         dict.__setitem__("nonzero", JNumeric.nonzero);
         dict.__setitem__("ones", JNumeric.ones);
         dict.__setitem__("repeat", JNumeric.repeat);
@@ -220,6 +228,10 @@ public class JNumeric extends PyObject implements ClassDictInit {
      */
     static final public PyObject nonzero = new NonzeroFunction();
     /**
+     * linspace(start, stop, num=50, endpoint=True, retstep=False)
+     */
+    static final public PyObject linspace = new LinspaceFunction();
+    /**
      * ones(shape, typecode=None)
      */
     static final public PyObject ones = new OnesFunction();
@@ -319,7 +331,7 @@ final class ArrayrangeFunction extends KeywordFunction {
     }
 
     @Override public PyObject _call(final PyObject args[]) {
-        if (args[3] == Py.None) {
+        if (args[3].equals(Py.None)) {
             args[3] = this.defaultArgs[3];
         }
         return PyMultiarray.arrayRange(
@@ -386,7 +398,7 @@ final class ArrayFunction extends KeywordFunction {
     }
 
     @Override public PyObject _call(final PyObject args[]) {
-        if (args[1] == Py.None) {
+        if (args[1].equals(Py.None)) {
             args[1] = this.defaultArgs[1];
         }
         if (args[2].__nonzero__()) {
@@ -407,7 +419,7 @@ final class AsarrayFunction extends KeywordFunction {
     }
 
     @Override public PyObject _call(final PyObject args[]) {
-        if (args[1] == Py.None) {
+        if (args[1].equals(Py.None)) {
             args[1] = this.defaultArgs[1];
         }
         return PyMultiarray.asarray(args[0], Py.py2char(args[1]));
@@ -623,7 +635,7 @@ final class IndicesFunction extends KeywordFunction {
     }
 
     @Override public PyObject _call(final PyObject args[]) {
-        if (args[1] == Py.None) {
+        if (args[1].equals(Py.None)) {
             args[1] = this.defaultArgs[1];
         }
         return PyMultiarray.indices(args[0], Py.py2char(args[1]));
@@ -649,6 +661,48 @@ final class InnerproductFunction extends KeywordFunction {
                 args[1],
                 Py.py2int(args[2]),
                 Py.py2int(args[3]));
+    }
+}
+
+final class LinspaceFunction extends KeywordFunction {
+    private static final long serialVersionUID = 5746081813573451761L;
+
+    LinspaceFunction() {
+        this.docString = "linspace(start, stop, num=50, endpoint=True, retstep=False)";
+        this.argNames = new String[] { "start", "stop", "num", "endpoint", "retstep" };
+        this.defaultArgs = new PyObject[] {
+                null,
+                null,
+                Py.newInteger(50),
+                Py.newBoolean(true),
+                Py.newBoolean(false) };
+    }
+
+    @Override public PyObject _call(final PyObject args[]) {
+    	System.out.println(args[2]);
+    	
+    	float step = 0;
+    	float start = Py.py2float(args[0]);
+    	float stop = Py.py2float(args[1]);
+    	float num = Py.py2float(args[2]);
+    	
+    	if (Py.py2boolean(args[3])) {
+    		step = (stop - start) / (num-1);
+    		stop = stop + step;
+    	}
+    	else {
+    		step = (stop - start) / num;
+    	}
+    	
+    	PyMultiarray r = PyMultiarray.arrayRange(args[0],
+                								 Py.newFloat(stop),
+                								 Py.newFloat(step),
+    											 'f');
+
+    	if (Py.py2boolean(args[4])) 
+    		return new PyTuple(r, Py.newFloat(step));
+    	else
+    		return r;
     }
 }
 
